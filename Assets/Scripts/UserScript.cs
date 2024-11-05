@@ -34,7 +34,6 @@ public class UserScript : MonoBehaviour
 
         InteractAction = controllerMovement.User.Interact;
         InteractAction.Enable();
-        InteractAction.performed += Interact;
     }
 
     private void OnDisable()
@@ -50,7 +49,10 @@ public class UserScript : MonoBehaviour
 
         if (OVRManager.OVRManagerinitialized)
         {
-            // Quest is used
+            // Adjust height of camera
+            Vector3 localPos = cameraRig.transform.localPosition;
+            localPos.y = OVRManager.profile.eyeHeight - 1;
+            cameraRig.transform.localPosition = localPos;
         }
         else
         {
@@ -60,6 +62,15 @@ public class UserScript : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    private void FixedUpdate()
+    {
+        float button = InteractAction.ReadValue<float>();
+        if (button != 0f)
+        {
+            Instantiate(cube, rightController.position, rightController.rotation);
+        }
     }
 
     void Update()
@@ -83,10 +94,5 @@ public class UserScript : MonoBehaviour
             cameraRig.transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0);
         }
         #endregion
-    }
-
-    private void Interact(InputAction.CallbackContext callbackContext)
-    {
-        Instantiate(cube,rightController.position, rightController.rotation);
     }
 }
