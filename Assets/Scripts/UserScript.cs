@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,6 +20,14 @@ public class UserScript : MonoBehaviour
     private float rotationX = 0;
     private float rotationY = 0;
 
+    private List<MeshFilter> meshes = new List<MeshFilter>();
+    private GameObject currentParent = null;
+    public Material Material;
+    
+    private List<Vector3> linePoints = new List<Vector3>();
+    private LineRenderer lineRenderer;
+    private int pointIndex;
+
     private void Awake()
     {
         controllerMovement = new InputActions();
@@ -34,6 +44,35 @@ public class UserScript : MonoBehaviour
 
         InteractAction = controllerMovement.User.Interact;
         InteractAction.Enable();
+        InteractAction.performed += InitDraw;
+        // InteractAction.canceled += EndDraw;
+    }
+
+    private void InitDraw(InputAction.CallbackContext context)
+    {
+        currentParent = new GameObject("Line");
+        lineRenderer = currentParent.AddComponent<LineRenderer>();
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        lineRenderer.material = Material;
+        lineRenderer.positionCount = 0;
+        pointIndex = 0;
+    }
+    
+    private void EndDraw(InputAction.CallbackContext context)
+    {
+        CombineInstance[] combine = new CombineInstance[meshes.Count];
+        for (int i = 0; i < meshes.Count; i++)
+        {
+            combine[i].mesh = meshes[i].sharedMesh;
+            combine[i].transform = meshes[i].transform.localToWorldMatrix;
+            meshes[i].gameObject.SetActive(false);
+        }
+        Mesh combinedMesh = new Mesh();
+        combinedMesh.CombineMeshes(combine);
+        currentParent.AddComponent<MeshFilter>().mesh = combinedMesh;
+        currentParent.AddComponent<MeshRenderer>().material = Material;
+        meshes.Clear();
     }
 
     private void OnDisable()
@@ -56,6 +95,7 @@ public class UserScript : MonoBehaviour
         }
         else
         {
+            rightController.Translate(0.2f, 0, .4f);
             Debug.Log("DEBUG!");
             DEBUG = true;
         }
@@ -63,19 +103,30 @@ public class UserScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
-    private void FixedUpdate()
+    
+    private void CreateObject()
     {
         float button = InteractAction.ReadValue<float>();
         if (button != 0f)
         {
-            Instantiate(cube, rightController.position, rightController.rotation);
+            GameObject obj = Instantiate(cube, rightController.position, rightController.rotation,
+                currentParent.transform);
+            meshes.Add(obj.GetComponent<MeshFilter>());
+        }
+    }
+    private void CreateLinePoint()
+    {
+        float button = InteractAction.ReadValue<float>();
+        if (button != 0f)
+        {
+            lineRenderer.positionCount++;
+            lineRenderer.SetPosition(pointIndex++, rightController.position);
         }
     }
 
     void Update()
     {
-
+        CreateLinePoint();
         #region Move Controller
         if (DEBUG)
         {
