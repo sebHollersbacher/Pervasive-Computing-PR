@@ -21,12 +21,17 @@ public class UserScript : MonoBehaviour
     private float rotationY = 0;
 
     private List<MeshFilter> meshes = new List<MeshFilter>();
-    private GameObject currentParent = null;
+    private GameObject currentParent1 = null;
+    private GameObject currentParent2 = null;
     public Material Material;
-    
+
     private List<Vector3> linePoints = new List<Vector3>();
-    private LineRenderer lineRenderer;
+    private LineRenderer lineRenderer1;
+    private LineRenderer lineRenderer2;
     private int pointIndex;
+
+    float timer;
+    float timerDelay = 0.01f;
 
     private void Awake()
     {
@@ -44,21 +49,55 @@ public class UserScript : MonoBehaviour
 
         InteractAction = controllerMovement.User.Interact;
         InteractAction.Enable();
-        InteractAction.performed += InitDraw;
-        // InteractAction.canceled += EndDraw;
+        InteractAction.performed += InitDraw2;
+        InteractAction.canceled += EndDraw2;
+    }
+
+    private void OnDisable()
+    {
+        MoveControllerAction.Disable();
+        LookMouseAction.Disable();
+        InteractAction.Disable();
+    }
+
+    private void InitDraw2(InputAction.CallbackContext context)
+    {
+    }
+    private void EndDraw2(InputAction.CallbackContext context)
+    {
+        currentParent1 = new GameObject("Line");
+        lineRenderer1 = currentParent1.AddComponent<LineRenderer>();
+        lineRenderer1.material = Material;
+        lineRenderer1.startWidth = 0.01f;
+        lineRenderer1.endWidth = 0.01f;
+
+        lineRenderer1.positionCount = linePoints.Count;
+        lineRenderer1.SetPositions(linePoints.ToArray());
+
+        linePoints.Clear();
     }
 
     private void InitDraw(InputAction.CallbackContext context)
     {
-        currentParent = new GameObject("Line");
-        lineRenderer = currentParent.AddComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.1f;
-        lineRenderer.endWidth = 0.1f;
-        lineRenderer.material = Material;
-        lineRenderer.positionCount = 0;
+        currentParent1 = new GameObject("Line");
+        lineRenderer1 = currentParent1.AddComponent<LineRenderer>();
+        lineRenderer1.startWidth = 0.1f;
+        lineRenderer1.endWidth = 0.1f;
+        lineRenderer1.material = Material;
+        lineRenderer1.positionCount = 0;
+        lineRenderer1.alignment = LineAlignment.TransformZ;
+
+        currentParent2 = new GameObject("Line");
+        currentParent2.transform.rotation = new Quaternion(0f, 180f, 0f, 0f);
+        lineRenderer2 = currentParent2.AddComponent<LineRenderer>();
+        lineRenderer2.startWidth = 0.02f;
+        lineRenderer2.endWidth = 0.02f;
+        lineRenderer2.material = Material;
+        lineRenderer2.positionCount = 0;
+        lineRenderer2.alignment = LineAlignment.TransformZ;
         pointIndex = 0;
     }
-    
+
     private void EndDraw(InputAction.CallbackContext context)
     {
         CombineInstance[] combine = new CombineInstance[meshes.Count];
@@ -70,20 +109,14 @@ public class UserScript : MonoBehaviour
         }
         Mesh combinedMesh = new Mesh();
         combinedMesh.CombineMeshes(combine);
-        currentParent.AddComponent<MeshFilter>().mesh = combinedMesh;
-        currentParent.AddComponent<MeshRenderer>().material = Material;
+        currentParent1.AddComponent<MeshFilter>().mesh = combinedMesh;
+        currentParent1.AddComponent<MeshRenderer>().material = Material;
         meshes.Clear();
-    }
-
-    private void OnDisable()
-    {
-        MoveControllerAction.Disable();
-        LookMouseAction.Disable();
-        InteractAction.Disable();
     }
 
     void Start()
     {
+        timer = timerDelay;
         cameraRig = GetComponentInChildren<OVRCameraRig>();
 
         if (OVRManager.OVRManagerinitialized)
@@ -103,14 +136,14 @@ public class UserScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    
+
     private void CreateObject()
     {
         float button = InteractAction.ReadValue<float>();
         if (button != 0f)
         {
             GameObject obj = Instantiate(cube, rightController.position, rightController.rotation,
-                currentParent.transform);
+                currentParent1.transform);
             meshes.Add(obj.GetComponent<MeshFilter>());
         }
     }
@@ -119,8 +152,16 @@ public class UserScript : MonoBehaviour
         float button = InteractAction.ReadValue<float>();
         if (button != 0f)
         {
-            lineRenderer.positionCount++;
-            lineRenderer.SetPosition(pointIndex++, rightController.position);
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                linePoints.Add(rightController.position);
+                timer = timerDelay;
+            }
+            //lineRenderer1.positionCount++;
+            //lineRenderer1.SetPosition(pointIndex, Quaternion.Euler(0,0, rightController.rotation.z) * rightController.position);
+            //lineRenderer2.positionCount++;
+            //lineRenderer2.SetPosition(pointIndex++, Quaternion.Euler(0, 0, rightController.rotation.z) * rightController.position);
         }
     }
 
