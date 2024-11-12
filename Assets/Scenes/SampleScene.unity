@@ -480,6 +480,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1416617237}
+  - component: {fileID: 1416617239}
   - component: {fileID: 1416617238}
   m_Layer: 0
   m_Name: User
@@ -513,16 +514,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1416617236}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ff1a96e1584c5a4284f069b7042494c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Material: {fileID: 2100000, guid: 338881227960a4b4a814bf268c800acb, type: 2}
+  segmentsPerUnit: 15
+  radialSegments: 10
+  radius: 0.02
+  brushTransform: {fileID: 1489281764}
+  cube: {fileID: 2258539358174458587, guid: 191ad0ebcc1937845bbddca65578fe58, type: 3}
+--- !u!114 &1416617239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416617236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9def4d9d60a77447b40c1388ae0d125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightController: {fileID: 1489281764}
-  cube: {fileID: 2258539358174458587, guid: 191ad0ebcc1937845bbddca65578fe58, type: 3}
+  rightController: {fileID: 514062682}
   mouseSensitivity: 20
-  Material: {fileID: 2100000, guid: 338881227960a4b4a814bf268c800acb, type: 2}
-  segmentsPerUnit: 10
-  radialSegments: 8
-  radius: 0.02
 --- !u!1 &1417107240
 GameObject:
   m_ObjectHideFlags: 0
