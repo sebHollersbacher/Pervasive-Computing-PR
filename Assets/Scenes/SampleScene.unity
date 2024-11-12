@@ -517,11 +517,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ff1a96e1584c5a4284f069b7042494c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Material: {fileID: 2100000, guid: 338881227960a4b4a814bf268c800acb, type: 2}
-  segmentsPerUnit: 15
-  radialSegments: 10
-  radius: 0.02
+  drawMode: 2
   brushTransform: {fileID: 1489281764}
+  material: {fileID: 2100000, guid: 338881227960a4b4a814bf268c800acb, type: 2}
+  segmentsPerUnit: 15
+  radialSegments: 4
+  radius: 0.02
   cube: {fileID: 2258539358174458587, guid: 191ad0ebcc1937845bbddca65578fe58, type: 3}
 --- !u!114 &1416617239
 MonoBehaviour:

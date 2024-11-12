@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,92 +6,175 @@ using UnityEngine.Splines;
 
 public class Drawing : MonoBehaviour
 {
-    private Input input;
-    private InputAction InteractAction;
+    public enum DrawMode
+    {
+        Cube,
+        Line,
+        Spline
+    }
+
+    private InputAction _interactAction;
+
+    // General
+    public DrawMode drawMode = DrawMode.Spline;
+    public Transform brushTransform;
+    public Material material;
+
+    private GameObject _currentParent;
+    private float _timer;
+    private const float TimerDelay = 0.02f;
 
     // Splines
-    public Material Material;
-    private GameObject currentParent = null;
-    private SplineContainer splineContainer;
-    private SplineExtrude splineExtrude;
+    private SplineContainer _splineContainer;
+    private SplineExtrude _splineExtrude;
+    private MeshFilter _meshFilter;
 
     public int segmentsPerUnit = 10;
-    public int radialSegments = 10;
+    public int radialSegments = 4;
     public float radius = 0.02f;
-    private MeshFilter meshFilter;
-
-    public Transform brushTransform;
 
     // Cubes
     public GameObject cube;
-    private List<MeshFilter> meshes = new List<MeshFilter>();
+    private readonly List<MeshFilter> _meshes = new();
 
     // Lines
-    private List<Vector3> linePoints = new List<Vector3>();
-    private LineRenderer lineRenderer;
-    private int pointIndex;
-
-    float timer;
-    float timerDelay = 0.02f;
+    private LineRenderer _lineRenderer;
+    private int _pointIndex;
 
     #region Inputs
 
     private void OnEnable()
     {
-        InteractAction = Input.Instance.User.Interact;
-        InteractAction.Enable();
-        InteractAction.performed += InitDrawing;
+        _interactAction = Input.Instance.User.Interact;
+        _interactAction.Enable();
+        _interactAction.performed += InitDrawing;
+        if (drawMode == DrawMode.Cube)
+            _interactAction.canceled += EndDrawingCube;
     }
 
     private void OnDisable()
     {
-        InteractAction.Disable();
+        _interactAction.Disable();
     }
 
     #endregion
 
     private void Update()
     {
-        CreateKnot();
+        switch (drawMode)
+        {
+            case DrawMode.Cube:
+                CreateObject();
+                break;
+            case DrawMode.Line:
+                CreateLinePoint();
+                break;
+            case DrawMode.Spline:
+                CreateKnot();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
+
+    #region InitDrawing
 
     private void InitDrawing(InputAction.CallbackContext context)
     {
-        currentParent = new GameObject("Line");
-        
-        splineContainer = currentParent.AddComponent<SplineContainer>();
-        meshFilter = currentParent.AddComponent<MeshFilter>();
-        splineExtrude = currentParent.AddComponent<SplineExtrude>();
-        currentParent.GetComponent<MeshRenderer>().material = Material;
-        
-        splineExtrude.enabled = true;
-        splineExtrude.Container = splineContainer;
-        splineExtrude.Radius = radius;
-        splineExtrude.SegmentsPerUnit = segmentsPerUnit;
-        splineExtrude.Sides = radialSegments;
+        switch (drawMode)
+        {
+            case DrawMode.Cube:
+                InitDrawingCube();
+                break;
+            case DrawMode.Line:
+                InitDrawingLine();
+                break;
+            case DrawMode.Spline:
+                InitDrawingSpline();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+    private void InitDrawingCube()
+    {
+        cube.GetComponent<MeshRenderer>().material = material;
+        _currentParent = new GameObject("Line");
+        _currentParent.AddComponent<MeshRenderer>().material = material;
+    }
+    private void InitDrawingLine()
+    {
+        _currentParent = new GameObject("Line");
+        _lineRenderer = _currentParent.AddComponent<LineRenderer>();
+        _lineRenderer.startWidth = 0.1f;
+        _lineRenderer.endWidth = 0.1f;
+        _lineRenderer.material = material;
+        _lineRenderer.positionCount = 0;
+    }
+
+    private void InitDrawingSpline()
+    {
+        _currentParent = new GameObject("Line");
+
+        _splineContainer = _currentParent.AddComponent<SplineContainer>();
+        _meshFilter = _currentParent.AddComponent<MeshFilter>();
+        _splineExtrude = _currentParent.AddComponent<SplineExtrude>();
+        _currentParent.GetComponent<MeshRenderer>().material = material;
+
+        _splineExtrude.enabled = true;
+        _splineExtrude.Container = _splineContainer;
+        _splineExtrude.Radius = radius;
+        _splineExtrude.SegmentsPerUnit = segmentsPerUnit;
+        _splineExtrude.Sides = radialSegments;
+    }
+
+    #endregion
+
+    #region CreatePoints
+    private void CreateObject()
+    {
+        float button = _interactAction.ReadValue<float>();
+        if (button == 0f) return;
+
+        GameObject obj = Instantiate(cube, brushTransform.position, brushTransform.rotation,
+            _currentParent.transform);
+        _meshes.Add(obj.GetComponent<MeshFilter>());
+    }
+
+    private void CreateLinePoint()
+    {
+        float button = _interactAction.ReadValue<float>();
+        if (button == 0f) return;
+
+        _timer -= Time.deltaTime;
+        if (_timer > 0) return;
+        _timer = TimerDelay;
+
+        _lineRenderer.SetPosition(_lineRenderer.positionCount++, brushTransform.position);
     }
 
     private void CreateKnot()
     {
-        var button = InteractAction.ReadValue<float>();
+        var button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
 
-        timer -= Time.deltaTime;
-        if (timer > 0) return;
-        timer = timerDelay;
+        _timer -= Time.deltaTime;
+        if (_timer > 0) return;
+        _timer = TimerDelay;
 
-        splineContainer.Spline.Add(new BezierKnot(brushTransform.position), TangentMode.Linear);
-        UpdateMesh();
+        var knot = new BezierKnot(brushTransform.position)
+        {
+            Rotation = brushTransform.rotation
+        };
+        _splineContainer.Spline.Add(knot, TangentMode.Linear);
+        GenerateExtrudedMesh();
     }
 
-    private void UpdateMesh()
-    {
-        meshFilter.mesh = GenerateExtrudedMesh(splineContainer.Spline);
-        splineExtrude.Rebuild();
-    }
+    #endregion
 
-    private Mesh GenerateExtrudedMesh(Spline spline)
+    private void GenerateExtrudedMesh()
     {
+        Spline spline = _splineContainer.Spline;
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
 
@@ -140,68 +223,30 @@ public class Drawing : MonoBehaviour
         }
 
         // Create the mesh
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
+        Mesh mesh = new Mesh
+        {
+            vertices = vertices.ToArray(),
+            triangles = triangles.ToArray()
+        };
         mesh.RecalculateNormals();
+        _meshFilter.mesh = mesh;
 
-        return mesh;
+        _splineExtrude.Rebuild();
     }
 
-    #region Other
-
-    /*
-    private void CreateObject()
+    private void EndDrawingCube(InputAction.CallbackContext context)
     {
-        float button = InteractAction.ReadValue<float>();
-        if (button != 0f)
+        CombineInstance[] combine = new CombineInstance[_meshes.Count];
+        for (int i = 0; i < _meshes.Count; i++)
         {
-            GameObject obj = Instantiate(cube, rightController.position, rightController.rotation,
-                currentParent.transform);
-            meshes.Add(obj.GetComponent<MeshFilter>());
-        }
-    }
-
-    private void CreateLinePoint()
-    {
-        float button = InteractAction.ReadValue<float>();
-        if (button != 0f)
-        {
-            timer -= Time.deltaTime;
-            if (timer <= 0)
-            {
-                lineRenderer.SetPosition(lineRenderer.positionCount++, rightController.position);
-                timer = timerDelay;
-            }
-        }
-    }
-
-    private void InitDraw(InputAction.CallbackContext context)
-    {
-        currentParent = new GameObject("Line");
-        lineRenderer = currentParent.AddComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.1f;
-        lineRenderer.endWidth = 0.1f;
-        lineRenderer.material = Material;
-        lineRenderer.positionCount = 0;
-    }
-
-    private void EndDraw(InputAction.CallbackContext context)
-    {
-        CombineInstance[] combine = new CombineInstance[meshes.Count];
-        for (int i = 0; i < meshes.Count; i++)
-        {
-            combine[i].mesh = meshes[i].sharedMesh;
-            combine[i].transform = meshes[i].transform.localToWorldMatrix;
-            meshes[i].gameObject.SetActive(false);
+            combine[i].mesh = _meshes[i].sharedMesh;
+            combine[i].transform = _meshes[i].transform.localToWorldMatrix;
+            _meshes[i].gameObject.SetActive(false);
         }
 
         Mesh combinedMesh = new Mesh();
         combinedMesh.CombineMeshes(combine);
-        currentParent.AddComponent<MeshFilter>().mesh = combinedMesh;
-        currentParent.AddComponent<MeshRenderer>().material = Material;
-        meshes.Clear();
-    }*/
-
-    #endregion
+        _currentParent.AddComponent<MeshFilter>().mesh = combinedMesh;
+        _meshes.Clear();
+    }
 }
