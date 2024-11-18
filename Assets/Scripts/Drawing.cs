@@ -59,7 +59,7 @@ public class Drawing : MonoBehaviour
 
     #endregion
 
-    private void Update()
+    private void FixedUpdate()
     {
         switch (drawMode)
         {
@@ -164,7 +164,7 @@ public class Drawing : MonoBehaviour
 
         var knot = new BezierKnot(brushTransform.position)
         {
-            Rotation = brushTransform.rotation
+            // Rotation = brushTransform.rotation
         };
         _splineContainer.Spline.Add(knot, TangentMode.Linear);
         GenerateExtrudedMesh();
