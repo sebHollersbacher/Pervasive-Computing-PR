@@ -47,12 +47,10 @@ public class Drawing : MonoBehaviour
     {
         _interactAction = Input.Instance.User.Interact;
         _interactAction.Enable();
-        // TODO disabled for now
-        /*
         _interactAction.performed += InitDrawing;
         if (drawMode == DrawMode.Cube)
             _interactAction.canceled += EndDrawingCube;
-            */
+            
     }
 
     private void OnDisable()
