@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Meta.WitAi;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Splines;
@@ -10,14 +12,15 @@ public class Drawing : MonoBehaviour
     {
         Cube,
         Line,
-        Spline
+        Spline,
+        Mesh
     }
 
     private InputAction _interactAction;
 
     // General
-    public DrawMode drawMode = DrawMode.Spline;
-    public Transform brushTransform;
+    public DrawMode drawMode = DrawMode.Mesh;
+    public GameObject brush;
     public Material material;
 
     private GameObject _currentParent;
@@ -41,8 +44,12 @@ public class Drawing : MonoBehaviour
     private LineRenderer _lineRenderer;
     private int _pointIndex;
 
-    #region Inputs
+    // Mesh
+    public Mesh mesh;
+    private List<Vector3> vertices = new();
+    private List<int> triangles = new();
 
+    #region Inputs
     private void OnEnable()
     {
         _interactAction = Input.Instance.User.Interact;
@@ -50,7 +57,6 @@ public class Drawing : MonoBehaviour
         _interactAction.performed += InitDrawing;
         if (drawMode == DrawMode.Cube)
             _interactAction.canceled += EndDrawingCube;
-            
     }
 
     private void OnDisable()
@@ -62,6 +68,9 @@ public class Drawing : MonoBehaviour
 
     private void FixedUpdate()
     {
+        float button = _interactAction.ReadValue<float>();
+        if (button == 0f) return;
+        
         switch (drawMode)
         {
             case DrawMode.Cube:
@@ -72,6 +81,9 @@ public class Drawing : MonoBehaviour
                 break;
             case DrawMode.Spline:
                 CreateKnot();
+                break;
+            case DrawMode.Mesh:
+                UpdateMesh();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -93,16 +105,21 @@ public class Drawing : MonoBehaviour
             case DrawMode.Spline:
                 InitDrawingSpline();
                 break;
+            case DrawMode.Mesh:
+                InitDrawingMesh();
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
+
     private void InitDrawingCube()
     {
         cube.GetComponent<MeshRenderer>().material = material;
         _currentParent = new GameObject("Line");
         _currentParent.AddComponent<MeshRenderer>().material = material;
     }
+
     private void InitDrawingLine()
     {
         _currentParent = new GameObject("Line");
@@ -128,42 +145,52 @@ public class Drawing : MonoBehaviour
         _splineExtrude.SegmentsPerUnit = segmentsPerUnit;
         _splineExtrude.Sides = radialSegments;
     }
+    
+    private void InitDrawingMesh()
+    {
+        _currentParent = new GameObject("Line");
+        _currentParent.AddComponent<MeshRenderer>().material = material;
+        mesh = _currentParent.AddComponent<MeshFilter>().mesh;
+        mesh.MarkDynamic();
+        
+        Vector3[] originalVertices = brush.GetComponent<MeshFilter>().sharedMesh.vertices;
+        Vector3 scale = brush.transform.localScale;
+        Vector3[] scaledVertices = new Vector3[originalVertices.Length];
+        for (int i = 0; i < originalVertices.Length; i++)
+        {
+            scaledVertices[i] = Vector3.Scale(originalVertices[i], scale);
+        }
+        vertices = new(scaledVertices);
+        triangles = new(brush.GetComponent<MeshFilter>().sharedMesh.triangles);
+    }
 
     #endregion
 
     #region CreatePoints
+
     private void CreateObject()
     {
-        float button = _interactAction.ReadValue<float>();
-        if (button == 0f) return;
-
-        GameObject obj = Instantiate(cube, brushTransform.position, brushTransform.rotation,
+        GameObject obj = Instantiate(cube, brush.transform.position, brush.transform.rotation,
             _currentParent.transform);
         _meshes.Add(obj.GetComponent<MeshFilter>());
     }
 
     private void CreateLinePoint()
     {
-        float button = _interactAction.ReadValue<float>();
-        if (button == 0f) return;
-
         _timer -= Time.deltaTime;
         if (_timer > 0) return;
         _timer = TimerDelay;
 
-        _lineRenderer.SetPosition(_lineRenderer.positionCount++, brushTransform.position);
+        _lineRenderer.SetPosition(_lineRenderer.positionCount++, brush.transform.position);
     }
 
     private void CreateKnot()
     {
-        var button = _interactAction.ReadValue<float>();
-        if (button == 0f) return;
-
         _timer -= Time.deltaTime;
         if (_timer > 0) return;
         _timer = TimerDelay;
 
-        var knot = new BezierKnot(brushTransform.position)
+        var knot = new BezierKnot(brush.transform.position)
         {
             // Rotation = brushTransform.rotation
         };
@@ -249,5 +276,52 @@ public class Drawing : MonoBehaviour
         combinedMesh.CombineMeshes(combine);
         _currentParent.AddComponent<MeshFilter>().mesh = combinedMesh;
         _meshes.Clear();
+    }
+
+    void UpdateMesh()
+    {
+        mesh.Clear();
+        GenerateExtendedMesh();
+        
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles.ToArray();
+
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+    }
+
+    private void GenerateExtendedMesh()
+    {
+        int ringStartIdx = vertices.Count;
+        int prevRingStartIdx = ringStartIdx - radialSegments;
+        
+        Vector3 pointOnSpline = brush.transform.position;
+        // TODO: Fix rotation
+        Quaternion rotationOnSpline = brush.transform.rotation;
+
+        for (int j = 0; j < radialSegments; j++)
+        {
+            float angle = j * Mathf.PI * 2 / radialSegments;
+            Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
+            vertices.Add(pointOnSpline + rotationOnSpline * localPos);
+        }
+        
+        for (int j = 0; j < radialSegments; j++)
+        {
+            int a = prevRingStartIdx  + j;
+            int b = prevRingStartIdx  + (j + 1) % radialSegments;
+            int c = ringStartIdx + j;
+            int d = ringStartIdx + (j + 1) % radialSegments;
+
+            // First triangle
+            triangles.Add(a);
+            triangles.Add(b);
+            triangles.Add(c);
+
+            // Second triangle
+            triangles.Add(b);
+            triangles.Add(d);
+            triangles.Add(c);
+        }
     }
 }
