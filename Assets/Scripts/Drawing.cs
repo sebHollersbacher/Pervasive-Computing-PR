@@ -50,6 +50,7 @@ public class Drawing : MonoBehaviour
     private List<int> triangles = new();
 
     #region Inputs
+
     private void OnEnable()
     {
         _interactAction = Input.Instance.User.Interact;
@@ -70,7 +71,7 @@ public class Drawing : MonoBehaviour
     {
         float button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
-        
+
         switch (drawMode)
         {
             case DrawMode.Cube:
@@ -145,21 +146,22 @@ public class Drawing : MonoBehaviour
         _splineExtrude.SegmentsPerUnit = segmentsPerUnit;
         _splineExtrude.Sides = radialSegments;
     }
-    
+
     private void InitDrawingMesh()
     {
         _currentParent = new GameObject("Line");
         _currentParent.AddComponent<MeshRenderer>().material = material;
         mesh = _currentParent.AddComponent<MeshFilter>().mesh;
         mesh.MarkDynamic();
-        
+
         Vector3[] originalVertices = brush.GetComponent<MeshFilter>().sharedMesh.vertices;
         Vector3 scale = brush.transform.localScale;
         Vector3[] scaledVertices = new Vector3[originalVertices.Length];
         for (int i = 0; i < originalVertices.Length; i++)
         {
-            scaledVertices[i] = Vector3.Scale(originalVertices[i], scale);
+            scaledVertices[i] = Vector3.Scale(originalVertices[i], scale) + brush.transform.position;
         }
+
         vertices = new(scaledVertices);
         triangles = new(brush.GetComponent<MeshFilter>().sharedMesh.triangles);
     }
@@ -282,7 +284,7 @@ public class Drawing : MonoBehaviour
     {
         mesh.Clear();
         GenerateExtendedMesh();
-        
+
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
 
@@ -294,7 +296,7 @@ public class Drawing : MonoBehaviour
     {
         int ringStartIdx = vertices.Count;
         int prevRingStartIdx = ringStartIdx - radialSegments;
-        
+
         Vector3 pointOnSpline = brush.transform.position;
         // TODO: Fix rotation
         Quaternion rotationOnSpline = brush.transform.rotation;
@@ -305,11 +307,11 @@ public class Drawing : MonoBehaviour
             Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
             vertices.Add(pointOnSpline + rotationOnSpline * localPos);
         }
-        
+
         for (int j = 0; j < radialSegments; j++)
         {
-            int a = prevRingStartIdx  + j;
-            int b = prevRingStartIdx  + (j + 1) % radialSegments;
+            int a = prevRingStartIdx + j;
+            int b = prevRingStartIdx + (j + 1) % radialSegments;
             int c = ringStartIdx + j;
             int d = ringStartIdx + (j + 1) % radialSegments;
 
