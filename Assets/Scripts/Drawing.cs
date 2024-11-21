@@ -45,9 +45,10 @@ public class Drawing : MonoBehaviour
     private int _pointIndex;
 
     // Mesh
-    public Mesh mesh;
+    private Mesh mesh;
     private List<Vector3> vertices = new();
     private List<int> triangles = new();
+    private Vector3 prevPoint;
 
     #region Inputs
 
@@ -154,8 +155,9 @@ public class Drawing : MonoBehaviour
         mesh = _currentParent.AddComponent<MeshFilter>().mesh;
         mesh.MarkDynamic();
 
+        prevPoint = brush.transform.position;
         Vector3[] originalVertices = brush.GetComponent<MeshFilter>().sharedMesh.vertices;
-        Vector3 scale = brush.transform.localScale;
+        Vector3 scale = brush.transform.lossyScale;
         Vector3[] scaledVertices = new Vector3[originalVertices.Length];
         for (int i = 0; i < originalVertices.Length; i++)
         {
@@ -294,18 +296,21 @@ public class Drawing : MonoBehaviour
 
     private void GenerateExtendedMesh()
     {
+        int radialSegments = 10;
         int ringStartIdx = vertices.Count;
         int prevRingStartIdx = ringStartIdx - radialSegments;
 
-        Vector3 pointOnSpline = brush.transform.position;
-        // TODO: Fix rotation
-        Quaternion rotationOnSpline = brush.transform.rotation;
+        Vector3 newPoint = brush.transform.position;
+        // TODO: Fix rotationö
+        Vector3 direction = (newPoint - prevPoint);
+        if (direction.magnitude < 0.001f) return;
+        Quaternion rotationOnSpline = Quaternion.LookRotation(direction.normalized, Vector3.up);;
 
         for (int j = 0; j < radialSegments; j++)
         {
             float angle = j * Mathf.PI * 2 / radialSegments;
             Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
-            vertices.Add(pointOnSpline + rotationOnSpline * localPos);
+            vertices.Add(newPoint + rotationOnSpline * localPos);
         }
 
         for (int j = 0; j < radialSegments; j++)
@@ -325,5 +330,7 @@ public class Drawing : MonoBehaviour
             triangles.Add(d);
             triangles.Add(c);
         }
+
+        prevPoint = newPoint;
     }
 }
