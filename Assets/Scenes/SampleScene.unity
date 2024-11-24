@@ -1594,7 +1594,6 @@ MonoBehaviour:
   radialSegments: 8
   radius: 0.02
   cube: {fileID: 2258539358174458587, guid: 191ad0ebcc1937845bbddca65578fe58, type: 3}
-  mesh: {fileID: 0}
 --- !u!114 &1201071128
 MonoBehaviour:
   m_ObjectHideFlags: 0

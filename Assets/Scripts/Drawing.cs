@@ -49,6 +49,7 @@ public class Drawing : MonoBehaviour
     private List<Vector3> vertices = new();
     private List<int> triangles = new();
     private Vector3 prevPoint;
+    private Quaternion prevRotation = Quaternion.identity;
 
     #region Inputs
 
@@ -150,22 +151,14 @@ public class Drawing : MonoBehaviour
 
     private void InitDrawingMesh()
     {
+        vertices.Clear();
+        triangles.Clear();
         _currentParent = new GameObject("Line");
         _currentParent.AddComponent<MeshRenderer>().material = material;
         mesh = _currentParent.AddComponent<MeshFilter>().mesh;
         mesh.MarkDynamic();
 
         prevPoint = brush.transform.position;
-        Vector3[] originalVertices = brush.GetComponent<MeshFilter>().sharedMesh.vertices;
-        Vector3 scale = brush.transform.lossyScale;
-        Vector3[] scaledVertices = new Vector3[originalVertices.Length];
-        for (int i = 0; i < originalVertices.Length; i++)
-        {
-            scaledVertices[i] = Vector3.Scale(originalVertices[i], scale) + brush.transform.position;
-        }
-
-        vertices = new(scaledVertices);
-        triangles = new(brush.GetComponent<MeshFilter>().sharedMesh.triangles);
     }
 
     #endregion
@@ -296,41 +289,66 @@ public class Drawing : MonoBehaviour
 
     private void GenerateExtendedMesh()
     {
-        int radialSegments = 10;
-        int ringStartIdx = vertices.Count;
-        int prevRingStartIdx = ringStartIdx - radialSegments;
-
         Vector3 newPoint = brush.transform.position;
-        // TODO: Fix rotationö
         Vector3 direction = (newPoint - prevPoint);
         if (direction.magnitude < 0.001f) return;
-        Quaternion rotationOnSpline = Quaternion.LookRotation(direction.normalized, Vector3.up);;
+        Quaternion newRotation = Quaternion.LookRotation((prevPoint - newPoint).normalized, Vector3.up);
+        Quaternion newRotationInv = Quaternion.LookRotation(direction.normalized, Vector3.up);
 
-        for (int j = 0; j < radialSegments; j++)
+        if (prevRotation == Quaternion.identity)
         {
-            float angle = j * Mathf.PI * 2 / radialSegments;
-            Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
-            vertices.Add(newPoint + rotationOnSpline * localPos);
+            // first face should be same as next
+            AddFace(prevPoint, newRotation);
+        }
+        else
+        {
+            // rotations of first face of sector should be prevRotation
+            AddFace(prevPoint, prevRotation);
         }
 
+        int ringStartIdx = vertices.Count + 1;
+        AddFace(newPoint, newRotationInv);
+        int prevRingStartIdx = ringStartIdx - radialSegments - 2;
         for (int j = 0; j < radialSegments; j++)
         {
-            int a = prevRingStartIdx + j;
-            int b = prevRingStartIdx + (j + 1) % radialSegments;
             int c = ringStartIdx + j;
             int d = ringStartIdx + (j + 1) % radialSegments;
+            int a = prevRingStartIdx + radialSegments - ((j + 2) % radialSegments);
+            int b = prevRingStartIdx + radialSegments - ((j + 3) % radialSegments);
 
-            // First triangle
             triangles.Add(a);
             triangles.Add(b);
             triangles.Add(c);
 
-            // Second triangle
             triangles.Add(b);
             triangles.Add(d);
             triangles.Add(c);
         }
 
         prevPoint = newPoint;
+        prevRotation = newRotation;
+    }
+
+    private void AddFace(Vector3 position, Quaternion rotation)
+    {
+        int middle = vertices.Count;
+        vertices.Add(position);
+        for (int j = 0; j < radialSegments; j++)
+        {
+            float angle = j * Mathf.PI * 2 / radialSegments;
+            Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
+            vertices.Add(position + rotation * localPos);
+        }
+
+        int startIndex = vertices.Count - radialSegments;
+        for (int j = 0; j < radialSegments; j++)
+        {
+            int current = startIndex + j;
+            int next = startIndex + (j + 1) % radialSegments;
+
+            triangles.Add(middle);
+            triangles.Add(current);
+            triangles.Add(next);
+        }
     }
 }
