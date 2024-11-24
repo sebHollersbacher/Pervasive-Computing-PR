@@ -26,6 +26,7 @@ public class Drawing : MonoBehaviour
     private GameObject _currentParent;
     private float _timer;
     private const float TimerDelay = 0.02f;
+    private bool _inputEnabled = true;
 
     // Splines
     private SplineContainer _splineContainer;
@@ -67,10 +68,25 @@ public class Drawing : MonoBehaviour
         _interactAction.Disable();
     }
 
+    public void DisableInputs()
+    {
+        _inputEnabled = false;
+        brush.SetActive(false);
+        _interactAction.Disable();
+    }
+
+    public void EnableInputs()
+    {
+        _interactAction.Enable();
+        brush.SetActive(true);
+        _inputEnabled = true;
+    }
+    
     #endregion
 
     private void FixedUpdate()
     {
+        if (!_inputEnabled) return;
         float button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
 

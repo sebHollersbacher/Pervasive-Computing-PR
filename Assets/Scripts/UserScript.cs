@@ -5,11 +5,15 @@ public class UserScript : MonoBehaviour
 {
     private bool _debug;
     public Transform rightController;
+    private Drawing _drawing;
+    public GameObject rayInteractor;
+    public GameObject canvas;
 
     // Input
     private Input _inputs;
     private InputAction _moveControllerAction;
     private InputAction _lookMouseAction;
+    private InputAction _menuAction;
 
     public float mouseSensitivity = 20f;
     private float _rotationX;
@@ -30,17 +34,24 @@ public class UserScript : MonoBehaviour
 
         _lookMouseAction = _inputs.User.Look;
         _lookMouseAction.Enable();
+        
+        _menuAction = _inputs.User.Menu;
+        _menuAction.Enable();
+        _menuAction.performed += OpenMenu;
+        _menuAction.canceled += CloseMenu;
     }
 
     private void OnDisable()
     {
         _moveControllerAction.Disable();
         _lookMouseAction.Disable();
+        _menuAction.Disable();
     }
 
     private void Start()
     {
         _cameraRig = GetComponentInChildren<OVRCameraRig>();
+        _drawing = GetComponentInChildren<Drawing>();
 
         if (OVRManager.OVRManagerinitialized)
         {
@@ -84,5 +95,19 @@ public class UserScript : MonoBehaviour
         }
 
         #endregion
+    }
+
+    private void OpenMenu(InputAction.CallbackContext ctx)
+    {
+        _drawing.DisableInputs();
+        rayInteractor.SetActive(true);
+        canvas.SetActive(true);
+    }
+
+    private void CloseMenu(InputAction.CallbackContext ctx)
+    {
+        canvas.SetActive(false);
+        rayInteractor.SetActive(false);
+        _drawing.EnableInputs();
     }
 }
