@@ -63,7 +63,6 @@ public class UserScript : MonoBehaviour
         else
         {
             rightController.Translate(0.2f, 0, .4f);
-            Debug.Log("DEBUG!");
             _debug = true;
         }
 

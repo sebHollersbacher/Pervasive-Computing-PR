@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 public partial class Input : MonoBehaviour
 {
-    private static Input _instance = null;
+    private static Input _instance;
     
     public static Input Instance
     {
@@ -10,7 +11,7 @@ public partial class Input : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = new Input();
+                _instance = new();
             }
             return _instance;
         }

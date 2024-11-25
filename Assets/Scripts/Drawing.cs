@@ -22,6 +22,7 @@ public class Drawing : MonoBehaviour
     public DrawMode drawMode = DrawMode.Mesh;
     public GameObject brush;
     public Material material;
+    public Color lineColor = Color.white;
 
     private GameObject _currentParent;
     private float _timer;
@@ -170,7 +171,10 @@ public class Drawing : MonoBehaviour
         vertices.Clear();
         triangles.Clear();
         _currentParent = new GameObject("Line");
-        _currentParent.AddComponent<MeshRenderer>().material = material;
+
+        Material mat = new(Shader.Find("Standard"));
+        mat.color = lineColor;
+        _currentParent.AddComponent<MeshRenderer>().material = mat;
         mesh = _currentParent.AddComponent<MeshFilter>().mesh;
         mesh.MarkDynamic();
 

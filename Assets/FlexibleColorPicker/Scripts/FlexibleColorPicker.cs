@@ -251,6 +251,11 @@ public class FlexibleColorPicker : MonoBehaviour {
         UpdateHex();
         onColorChange.Invoke(startingColor);
     }
+    
+    private void OnDisable()
+    {
+        startingColor = bufferedColor.color;
+    }
 
     private void Update() {
         typeUpdate = false;
