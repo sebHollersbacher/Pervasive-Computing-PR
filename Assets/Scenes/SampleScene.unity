@@ -2195,6 +2195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawingScript: {fileID: 1201071127}
+  erasingScript: {fileID: 1201071132}
   drawingButton: {fileID: 86118440}
   eraseButton: {fileID: 949806955}
 --- !u!114 &1201071132

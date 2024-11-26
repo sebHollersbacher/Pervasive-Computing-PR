@@ -47,8 +47,9 @@ public class UserScript : MonoBehaviour
         _menuAction = _inputs.User.Menu;
         _menuAction.Enable();
         // TODO: change if not testing
-        _menuAction.performed += ToggleMode;
-        // _menuAction.canceled += CloseMenu;
+        // _menuAction.performed += ToggleMode;
+        _menuAction.performed += OpenMenu;
+        _menuAction.canceled += CloseMenu;
     }
 
     private void OnDisable()
@@ -79,6 +80,10 @@ public class UserScript : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        
+        canvas.SetActive(false);
+        rayInteractor.SetActive(false);
+        _drawing.EnableInputs();
     }
 
     private void Update()

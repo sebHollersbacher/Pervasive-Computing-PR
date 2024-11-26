@@ -24,6 +24,7 @@ public class Drawing : MonoBehaviour
     private readonly List<int> _triangles = new();
     private Vector3 _prevPoint;
     private Quaternion _prevRotation = Quaternion.identity;
+    private LineBehaviour _lineBehaviour;
 
     #region Inputs
 
@@ -70,6 +71,7 @@ public class Drawing : MonoBehaviour
         _vertices.Clear();
         _triangles.Clear();
         _currentParent = new GameObject("Line");
+        _lineBehaviour = _currentParent.AddComponent<LineBehaviour>();
 
         Material mat = new(Shader.Find("Standard"));
         mat.color = lineColor;
@@ -163,6 +165,7 @@ public class Drawing : MonoBehaviour
         {
             GameObject vertexMarker = Instantiate(colliderPrefab, position, Quaternion.identity);
             vertexMarker.GetComponent<SegmentCollider>().index = _vertices.Count / (radialSegments*2 + 2);
+            _lineBehaviour.AddPoint(_vertices.Count / (radialSegments*2 + 2));
             vertexMarker.transform.parent = _currentParent.transform;
         }
     }

@@ -15,9 +15,12 @@ public class SegmentCollider : MonoBehaviour
         Mesh mesh = gameObject.GetComponentInParent<MeshFilter>().sharedMesh;
         List<int> triangles = new(mesh.triangles);
         int count = 12 * segmentsCount;
-        if (triangles.Count < count * index) return;
+        LineBehaviour lineBehaviour = gameObject.GetComponentInParent<LineBehaviour>();
+        int idx = lineBehaviour.GetPointIndex(index);
+        if (idx < 0 || triangles.Count < count * (idx+1)) return;
 
-        triangles.RemoveRange(count * (index - 1), count);
+        lineBehaviour.RemovePoint(idx);
+        triangles.RemoveRange(count * idx, count);
         gameObject.GetComponentInParent<MeshFilter>().sharedMesh.triangles = triangles.ToArray();
     }
 }
