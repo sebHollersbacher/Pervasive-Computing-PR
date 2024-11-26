@@ -39,11 +39,11 @@ public class UI : MonoBehaviour
 
     public void SizeChanged(float value)
     {
-        drawingScript.radius = 0.001f + value * 0.03f;
+        drawingScript.ChangeRadius(0.001f + value * 0.03f);
     }
 
     public void ColorChanged(Color value)
     {
-        drawingScript.lineColor = value;
+        drawingScript.ChangeLineColor(value);
     }
 }

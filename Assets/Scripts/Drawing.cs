@@ -8,13 +8,13 @@ public class Drawing : MonoBehaviour
 
     // General
     public GameObject brush;
-    public Color lineColor = Color.red;
+    private Color _lineColor = Color.red;
 
     private GameObject _currentParent;
     private bool _inputEnabled = true;
 
     public int radialSegments = 4;
-    public float radius = 0.02f;
+    private float radius = 0.02f;
 
     public GameObject colliderPrefab;
 
@@ -54,6 +54,18 @@ public class Drawing : MonoBehaviour
         _inputEnabled = true;
     }
 
+    public void ChangeLineColor(Color newColor)
+    {
+        _lineColor = newColor;
+        brush.GetComponent<MeshRenderer>().material.color = _lineColor;
+    }
+    
+    public void ChangeRadius(float newRadius)
+    {
+        radius = newRadius;
+        brush.transform.localScale = new Vector3(2*radius, 2*radius, 2*radius);
+    }
+
     #endregion
 
     private void FixedUpdate()
@@ -74,7 +86,7 @@ public class Drawing : MonoBehaviour
         _lineBehaviour = _currentParent.AddComponent<LineBehaviour>();
 
         Material mat = new(Shader.Find("Standard"));
-        mat.color = lineColor;
+        mat.color = _lineColor;
         _currentParent.AddComponent<MeshRenderer>().material = mat;
         _mesh = _currentParent.AddComponent<MeshFilter>().mesh;
         _mesh.MarkDynamic();
