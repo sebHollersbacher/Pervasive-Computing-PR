@@ -15,7 +15,9 @@ public class Drawing : MonoBehaviour
 
     public int radialSegments = 4;
     public float radius = 0.02f;
-    
+
+    public GameObject colliderPrefab;
+
     // Mesh
     private Mesh _mesh;
     private readonly List<Vector3> _vertices = new();
@@ -50,7 +52,7 @@ public class Drawing : MonoBehaviour
         brush.SetActive(true);
         _inputEnabled = true;
     }
-    
+
     #endregion
 
     private void FixedUpdate()
@@ -62,7 +64,7 @@ public class Drawing : MonoBehaviour
     }
 
     #region InitDrawing
-    
+
     private void InitDrawingMesh(InputAction.CallbackContext context)
     {
         _vertices.Clear();
@@ -112,7 +114,7 @@ public class Drawing : MonoBehaviour
         }
 
         int ringStartIdx = _vertices.Count + 1;
-        AddFace(newPoint, newRotationInv);
+        AddFace(newPoint, newRotationInv, true);
         int prevRingStartIdx = ringStartIdx - radialSegments - 2;
         for (int j = 0; j < radialSegments; j++)
         {
@@ -134,9 +136,10 @@ public class Drawing : MonoBehaviour
         _prevRotation = newRotation;
     }
 
-    private void AddFace(Vector3 position, Quaternion rotation)
+    private void AddFace(Vector3 position, Quaternion rotation, bool createCol = false)
     {
         int middle = _vertices.Count;
+
         _vertices.Add(position);
         for (int j = 0; j < radialSegments; j++)
         {
@@ -154,6 +157,13 @@ public class Drawing : MonoBehaviour
             _triangles.Add(middle);
             _triangles.Add(current);
             _triangles.Add(next);
+        }
+
+        if (createCol)
+        {
+            GameObject vertexMarker = Instantiate(colliderPrefab, position, Quaternion.identity);
+            vertexMarker.GetComponent<SegmentCollider>().index = _vertices.Count / (radialSegments*2 + 2);
+            vertexMarker.transform.parent = _currentParent.transform;
         }
     }
 }

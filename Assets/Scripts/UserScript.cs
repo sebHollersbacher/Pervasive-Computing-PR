@@ -5,9 +5,18 @@ public class UserScript : MonoBehaviour
 {
     private bool _debug;
     public Transform rightController;
-    private Drawing _drawing;
     public GameObject rayInteractor;
     public GameObject canvas;
+    
+    private Mode _currentMode = Mode.Drawing;
+    private Drawing _drawing;
+    private Erasing _erasing;
+
+    enum Mode
+    {
+        Drawing,
+        Erasing
+    }
 
     // Input
     private Input _inputs;
@@ -34,11 +43,12 @@ public class UserScript : MonoBehaviour
 
         _lookMouseAction = _inputs.User.Look;
         _lookMouseAction.Enable();
-        
+
         _menuAction = _inputs.User.Menu;
         _menuAction.Enable();
-        _menuAction.performed += OpenMenu;
-        _menuAction.canceled += CloseMenu;
+        // TODO: change if not testing
+        _menuAction.performed += ToggleMode;
+        // _menuAction.canceled += CloseMenu;
     }
 
     private void OnDisable()
@@ -52,6 +62,7 @@ public class UserScript : MonoBehaviour
     {
         _cameraRig = GetComponentInChildren<OVRCameraRig>();
         _drawing = GetComponentInChildren<Drawing>();
+        _erasing = GetComponentInChildren<Erasing>();
 
         if (OVRManager.OVRManagerinitialized)
         {
@@ -94,6 +105,22 @@ public class UserScript : MonoBehaviour
         }
 
         #endregion
+    }
+
+    private void ToggleMode(InputAction.CallbackContext ctx)
+    {
+        if (_currentMode == Mode.Drawing)
+        {
+            _currentMode = Mode.Erasing;
+            _drawing.DisableInputs();
+            _erasing.EnableInputs();
+        }
+        else if (_currentMode == Mode.Erasing)
+        {
+            _currentMode = Mode.Drawing;
+            _erasing.DisableInputs();
+            _drawing.EnableInputs();
+        }
     }
 
     private void OpenMenu(InputAction.CallbackContext ctx)
