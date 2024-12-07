@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class UserScript : MonoBehaviour
 {
     private bool _debug;
     public Transform rightController;
     public GameObject rayInteractor;
-    public GameObject canvas;
+    public GameObject drawingCanvas;
+    public GameObject shapeCanvas;
     
     private Mode _currentMode = Mode.Drawing;
     private Drawing _drawing;
@@ -23,6 +25,7 @@ public class UserScript : MonoBehaviour
     private InputAction _moveControllerAction;
     private InputAction _lookMouseAction;
     private InputAction _menuAction;
+    private InputAction _shapeMenuAction;
 
     public float mouseSensitivity = 20f;
     private float _rotationX;
@@ -46,10 +49,13 @@ public class UserScript : MonoBehaviour
 
         _menuAction = _inputs.User.Menu;
         _menuAction.Enable();
-        // TODO: change if not testing
-        // _menuAction.performed += ToggleMode;
         _menuAction.performed += OpenMenu;
         _menuAction.canceled += CloseMenu;
+        
+        _shapeMenuAction = _inputs.User.ShapeMenu;
+        _shapeMenuAction.Enable();
+        _shapeMenuAction.performed += OpenShapeMenu;
+        _shapeMenuAction.canceled += CloseShapeMenu;
     }
 
     private void OnDisable()
@@ -57,6 +63,7 @@ public class UserScript : MonoBehaviour
         _moveControllerAction.Disable();
         _lookMouseAction.Disable();
         _menuAction.Disable();
+        _shapeMenuAction.Disable();
     }
 
     private void Start()
@@ -78,10 +85,12 @@ public class UserScript : MonoBehaviour
             _debug = true;
         }
 
+        
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
-        canvas.SetActive(false);
+        drawingCanvas.SetActive(false);
+        shapeCanvas.SetActive(false);
         rayInteractor.SetActive(false);
         _drawing.EnableInputs();
     }
@@ -132,13 +141,27 @@ public class UserScript : MonoBehaviour
     {
         _drawing.DisableInputs();
         rayInteractor.SetActive(true);
-        canvas.SetActive(true);
+        shapeCanvas.SetActive(false);
+        drawingCanvas.SetActive(true);
     }
 
     private void CloseMenu(InputAction.CallbackContext ctx)
     {
-        canvas.SetActive(false);
+        drawingCanvas.SetActive(false);
         rayInteractor.SetActive(false);
         _drawing.EnableInputs();
+    }
+
+    private void OpenShapeMenu(InputAction.CallbackContext ctx)
+    {
+        rayInteractor.SetActive(true);
+        drawingCanvas.SetActive(false);
+        shapeCanvas.SetActive(true);
+    }
+    
+    private void CloseShapeMenu(InputAction.CallbackContext ctx)
+    {
+        shapeCanvas.SetActive(false);
+        rayInteractor.SetActive(false);
     }
 }

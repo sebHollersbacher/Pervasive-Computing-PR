@@ -62,6 +62,15 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shape Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""84272c4c-8672-4644-a146-0daf70e5c8f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -194,6 +203,17 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
                     ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46c8a2b4-50ee-4312-bc81-108fc64e151b"",
+                    ""path"": ""<OculusTouchController>{LeftHand}/primaryButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;XR"",
+                    ""action"": ""Shape Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -785,6 +805,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         m_User_Move = m_User.FindAction("Move", throwIfNotFound: true);
         m_User_Interact = m_User.FindAction("Interact", throwIfNotFound: true);
         m_User_Menu = m_User.FindAction("Menu", throwIfNotFound: true);
+        m_User_ShapeMenu = m_User.FindAction("Shape Menu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -868,6 +889,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_User_Move;
     private readonly InputAction m_User_Interact;
     private readonly InputAction m_User_Menu;
+    private readonly InputAction m_User_ShapeMenu;
     public struct UserActions
     {
         private @Input m_Wrapper;
@@ -876,6 +898,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_User_Move;
         public InputAction @Interact => m_Wrapper.m_User_Interact;
         public InputAction @Menu => m_Wrapper.m_User_Menu;
+        public InputAction @ShapeMenu => m_Wrapper.m_User_ShapeMenu;
         public InputActionMap Get() { return m_Wrapper.m_User; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -897,6 +920,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
+            @ShapeMenu.started += instance.OnShapeMenu;
+            @ShapeMenu.performed += instance.OnShapeMenu;
+            @ShapeMenu.canceled += instance.OnShapeMenu;
         }
 
         private void UnregisterCallbacks(IUserActions instance)
@@ -913,6 +939,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
+            @ShapeMenu.started -= instance.OnShapeMenu;
+            @ShapeMenu.performed -= instance.OnShapeMenu;
+            @ShapeMenu.canceled -= instance.OnShapeMenu;
         }
 
         public void RemoveCallbacks(IUserActions instance)
@@ -1099,6 +1128,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnShapeMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

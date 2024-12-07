@@ -9,32 +9,48 @@ public class UI : MonoBehaviour
     public Drawing drawingScript;
     public Erasing erasingScript;
     
-    public Button drawingButton;
-    public Button eraseButton;
-
+    public GameObject drawingCanvas;
+    public GameObject shapeCanvas;
+    
+    private Button _drawingButton;
+    private Button _eraseButton;
+    
+    private Button _lineButton;
+    private Button _planeButton;
+    private Button _cubeButton;
+    private Button _sphereButton;
+    private Button _cylinderButton;
+    private Button _pyramidButton;
+    
     private void Start()
     {
-        drawingButton.interactable  = false;
-        erasingScript.DisableInputs();
-        drawingScript.EnableInputs();
+        var buttons = drawingCanvas.GetComponentsInChildren<Button>();
+        AssignButtons(buttons);
+        buttons = shapeCanvas.GetComponentsInChildren<Button>();
+        AssignButtons(buttons);
+        
+        DisableAll();
+        DrawingButton();
     }
 
     public void DrawingButton()
     {
-        drawingButton.interactable  = false;
-        eraseButton.interactable  = true;
-        
-        erasingScript.DisableInputs();
+        DisableAll();
+        _drawingButton.interactable = false;
         drawingScript.EnableInputs();
     }
 
     public void ErasingButton()
     {
-        drawingButton.interactable  = true;
-        eraseButton.interactable  = false;
-        
-        drawingScript.DisableInputs();
+        DisableAll();
+        _eraseButton.interactable = false;
         erasingScript.EnableInputs();
+    }
+
+    public void ChangeShapeButton(Button button)
+    {
+        DisableAll();
+        button.interactable = false;
     }
 
     public void SizeChanged(float value)
@@ -45,5 +61,39 @@ public class UI : MonoBehaviour
     public void ColorChanged(Color value)
     {
         drawingScript.ChangeLineColor(value);
+    }
+
+    private void DisableAll()
+    {
+        _drawingButton.interactable = true;
+        _eraseButton.interactable = true;
+        _lineButton.interactable = true;
+        _planeButton.interactable = true;
+        _cubeButton.interactable = true;
+        _sphereButton.interactable = true;
+        _cylinderButton.interactable = true;
+        _pyramidButton.interactable = true;
+        
+        erasingScript.DisableInputs();
+        drawingScript.DisableInputs();
+    }
+    
+    private void AssignButtons(Button[] buttons)
+    {
+        foreach (var button in buttons)
+        {
+            switch (button.name)
+            {
+                case "DrawingButton": _drawingButton = button; break;
+                case "ErasingButton": _eraseButton = button; break;
+                
+                case "LineButton": _lineButton = button; break;
+                case "PlaneButton": _planeButton = button; break;
+                case "CubeButton": _cubeButton = button; break;
+                case "SphereButton": _sphereButton = button; break;
+                case "CylinderButton":_cylinderButton = button; break;
+                case "PyramidButton": _pyramidButton = button; break;
+            }
+        }
     }
 }
