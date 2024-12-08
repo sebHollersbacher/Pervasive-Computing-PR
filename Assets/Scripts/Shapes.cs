@@ -9,12 +9,12 @@ public class Shapes : MonoBehaviour
     private InputAction _interactAction;
     private bool _inputEnabled = true;
     private bool _isCreating = false;
-    
-    public Transform creationPoint; 
+
+    public Transform creationPoint;
     private GameObject _shape;
     private Vector3 _initPoint;
     public Color ShapeColor { get; set; } = Color.red;
-    public ShapeType SelectedShapeType { get; set; } = ShapeType.Cube;
+    public ShapeType SelectedShapeType { get; set; } = ShapeType.Line;
 
     public enum ShapeType
     {
@@ -25,8 +25,9 @@ public class Shapes : MonoBehaviour
         Cylinder,
         Pyramid
     }
-    
+
     #region Inputs
+
     private void OnEnable()
     {
         _interactAction = Input.Instance.User.Interact;
@@ -52,6 +53,7 @@ public class Shapes : MonoBehaviour
         _interactAction.Enable();
         _inputEnabled = true;
     }
+
     #endregion
 
     private void FixedUpdate()
@@ -59,9 +61,21 @@ public class Shapes : MonoBehaviour
         if (!_inputEnabled || !_isCreating) return;
         float button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
-        
+
         var size = Vector3.Magnitude(creationPoint.transform.position - _initPoint);
         _shape.transform.localScale = new Vector3(size, size, size);
+
+        // TODO: adjust rotation;
+        Vector3 newPoint = creationPoint.transform.position;
+        _shape.transform.rotation = Quaternion.LookRotation(newPoint - _initPoint) * Quaternion.Euler(90, 0, 0);
+        if (SelectedShapeType == ShapeType.Plane)
+        {
+            _shape.transform.localScale = new Vector3(0.001f, size, size);
+        }
+        if (SelectedShapeType == ShapeType.Line)
+        {
+            _shape.transform.localScale = new Vector3(0.01f, size, 0.01f);
+        }
     }
 
     private void InitCreateShape(InputAction.CallbackContext ctx)
@@ -71,12 +85,12 @@ public class Shapes : MonoBehaviour
         switch (SelectedShapeType)
         {
             case ShapeType.Line:
-                _shape = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                _shape = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 break;
             case ShapeType.Plane:
-                _shape = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 break;
-            case ShapeType.Cube: 
+            case ShapeType.Cube:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 break;
             case ShapeType.Sphere:
@@ -86,21 +100,54 @@ public class Shapes : MonoBehaviour
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 break;
             case ShapeType.Pyramid:
-                _shape = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                _shape = CreatePyramid();
                 break;
         }
-        
-        // TODO: adjust rotation and init size
-        
+
         Material material = new(Shader.Find("Standard"));
         material.color = ShapeColor;
         _shape.GetComponent<MeshRenderer>().material = material;
         _shape.transform.position = creationPoint.transform.position;
+        _shape.transform.localScale = Vector3.zero;
         _initPoint = creationPoint.transform.position;
     }
-    
+
     private void FinishCreateShape(InputAction.CallbackContext ctx)
     {
         _isCreating = false;
+    }
+    
+    private GameObject CreatePyramid()
+    {
+        GameObject pyramid = new("Pyramid");
+        Mesh mesh = new Mesh();
+        pyramid.AddComponent<MeshFilter>().mesh = mesh;
+
+        Vector3[] vertices =
+        {
+            new(0, 1, 0),
+            new(-0.5f, 0, -0.5f),
+            new(0.5f, 0, -0.5f),
+            new(0.5f, 0, 0.5f),
+            new(-0.5f, 0, 0.5f)
+        };
+
+        int[] triangles =
+        {
+            0, 2, 1,
+            0, 3, 2,
+            0, 4, 3,
+            0, 1, 4,
+            1, 2, 3,
+            1, 3, 4
+        };
+
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+
+        pyramid.AddComponent<MeshRenderer>();
+        pyramid.AddComponent<MeshCollider>().sharedMesh = mesh;
+        return pyramid;
     }
 }
