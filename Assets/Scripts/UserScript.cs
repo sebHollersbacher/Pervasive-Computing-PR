@@ -10,14 +10,16 @@ public class UserScript : MonoBehaviour
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     
-    private Mode _currentMode = Mode.Drawing;
+    private Mode _currentMode = Mode.Shape;
     private Drawing _drawing;
     private Erasing _erasing;
+    private Shapes _shapes;
 
-    enum Mode
+    public enum Mode
     {
         Drawing,
-        Erasing
+        Erasing,
+        Shape
     }
 
     // Input
@@ -71,6 +73,7 @@ public class UserScript : MonoBehaviour
         _cameraRig = GetComponentInChildren<OVRCameraRig>();
         _drawing = GetComponentInChildren<Drawing>();
         _erasing = GetComponentInChildren<Erasing>();
+        _shapes = GetComponentInChildren<Shapes>();
 
         if (OVRManager.OVRManagerinitialized)
         {
@@ -121,25 +124,34 @@ public class UserScript : MonoBehaviour
         #endregion
     }
 
-    private void ToggleMode(InputAction.CallbackContext ctx)
+    private void EnableMode()
     {
-        if (_currentMode == Mode.Drawing)
+        switch (_currentMode)
         {
-            _currentMode = Mode.Erasing;
-            _drawing.DisableInputs();
-            _erasing.EnableInputs();
+            case Mode.Drawing: _drawing.EnableInputs(); break;
+            case Mode.Erasing: _erasing.EnableInputs(); break;
+            case Mode.Shape: _shapes.EnableInputs(); break;
         }
-        else if (_currentMode == Mode.Erasing)
+    }
+    
+    private void DisableMode()
+    {
+        switch (_currentMode)
         {
-            _currentMode = Mode.Drawing;
-            _erasing.DisableInputs();
-            _drawing.EnableInputs();
+            case Mode.Drawing: _drawing.DisableInputs(); break;
+            case Mode.Erasing: _erasing.DisableInputs(); break;
+            case Mode.Shape: _shapes.DisableInputs(); break;
         }
+    }
+
+    public void ChangeMode(Mode mode)
+    {
+        _currentMode = mode;
     }
 
     private void OpenMenu(InputAction.CallbackContext ctx)
     {
-        _drawing.DisableInputs();
+        DisableMode();
         rayInteractor.SetActive(true);
         shapeCanvas.SetActive(false);
         drawingCanvas.SetActive(true);
@@ -149,11 +161,12 @@ public class UserScript : MonoBehaviour
     {
         drawingCanvas.SetActive(false);
         rayInteractor.SetActive(false);
-        _drawing.EnableInputs();
+        EnableMode();
     }
 
     private void OpenShapeMenu(InputAction.CallbackContext ctx)
     {
+        DisableMode();
         rayInteractor.SetActive(true);
         drawingCanvas.SetActive(false);
         shapeCanvas.SetActive(true);
@@ -163,5 +176,6 @@ public class UserScript : MonoBehaviour
     {
         shapeCanvas.SetActive(false);
         rayInteractor.SetActive(false);
+        EnableMode();
     }
 }

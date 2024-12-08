@@ -6,8 +6,11 @@ using UnityEngine.UI;
 
 public class UI : MonoBehaviour
 {
+    private UserScript _userScript;
+    
     public Drawing drawingScript;
     public Erasing erasingScript;
+    public Shapes shapeScript;
     
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
@@ -24,6 +27,8 @@ public class UI : MonoBehaviour
     
     private void Start()
     {
+        _userScript = GetComponentInChildren<UserScript>();
+        
         var buttons = drawingCanvas.GetComponentsInChildren<Button>();
         AssignButtons(buttons);
         buttons = shapeCanvas.GetComponentsInChildren<Button>();
@@ -37,20 +42,32 @@ public class UI : MonoBehaviour
     {
         DisableAll();
         _drawingButton.interactable = false;
-        drawingScript.EnableInputs();
+        _userScript.ChangeMode(UserScript.Mode.Drawing);
     }
 
     public void ErasingButton()
     {
         DisableAll();
         _eraseButton.interactable = false;
-        erasingScript.EnableInputs();
+        _userScript.ChangeMode(UserScript.Mode.Erasing);
     }
 
     public void ChangeShapeButton(Button button)
     {
         DisableAll();
         button.interactable = false;
+        _userScript.ChangeMode(UserScript.Mode.Shape);
+
+        shapeScript.SelectedShapeType = button.name switch
+        {
+            "LineButton" => Shapes.ShapeType.Line,
+            "PlaneButton" => Shapes.ShapeType.Plane,
+            "CubeButton" => Shapes.ShapeType.Cube,
+            "SphereButton" => Shapes.ShapeType.Sphere,
+            "CylinderButton" => Shapes.ShapeType.Cylinder,
+            "PyramidButton" => Shapes.ShapeType.Pyramid,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     public void SizeChanged(float value)
@@ -61,6 +78,7 @@ public class UI : MonoBehaviour
     public void ColorChanged(Color value)
     {
         drawingScript.ChangeLineColor(value);
+        shapeScript.ShapeColor = value;
     }
 
     private void DisableAll()
