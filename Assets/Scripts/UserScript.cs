@@ -10,7 +10,7 @@ public class UserScript : MonoBehaviour
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     
-    private Mode _currentMode = Mode.Shape;
+    private Mode _currentMode = Mode.Drawing;
     private Drawing _drawing;
     private Erasing _erasing;
     private Shapes _shapes;

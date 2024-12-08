@@ -14,7 +14,7 @@ public class Drawing : MonoBehaviour
     private bool _inputEnabled = true;
 
     public int radialSegments = 4;
-    private float radius = 0.02f;
+    private float radius = 0.03f;
 
     public GameObject colliderPrefab;
 

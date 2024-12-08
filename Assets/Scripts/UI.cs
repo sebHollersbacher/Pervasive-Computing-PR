@@ -73,6 +73,7 @@ public class UI : MonoBehaviour
     public void SizeChanged(float value)
     {
         drawingScript.ChangeRadius(0.001f + value * 0.03f);
+        shapeScript.Radius = 0.001f + value * 0.03f;
     }
 
     public void ColorChanged(Color value)

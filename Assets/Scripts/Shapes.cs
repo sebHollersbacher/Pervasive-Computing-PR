@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class Shapes : MonoBehaviour
 {
     private InputAction _interactAction;
-    private bool _inputEnabled = true;
+    private bool _inputEnabled = false;
     private bool _isCreating = false;
 
     public Transform creationPoint;
@@ -15,6 +15,7 @@ public class Shapes : MonoBehaviour
     private Vector3 _initPoint;
     public Color ShapeColor { get; set; } = Color.red;
     public ShapeType SelectedShapeType { get; set; } = ShapeType.Line;
+    public float Radius { get; set; } = 0.03f;
 
     public enum ShapeType
     {
@@ -65,7 +66,6 @@ public class Shapes : MonoBehaviour
         var size = Vector3.Magnitude(creationPoint.transform.position - _initPoint);
         _shape.transform.localScale = new Vector3(size, size, size);
 
-        // TODO: adjust rotation;
         Vector3 newPoint = creationPoint.transform.position;
         _shape.transform.rotation = Quaternion.LookRotation(newPoint - _initPoint) * Quaternion.Euler(90, 0, 0);
         if (SelectedShapeType == ShapeType.Plane)
@@ -74,7 +74,8 @@ public class Shapes : MonoBehaviour
         }
         if (SelectedShapeType == ShapeType.Line)
         {
-            _shape.transform.localScale = new Vector3(0.01f, size, 0.01f);
+            _shape.transform.localScale = new Vector3(2*Radius, size/2, 2*Radius);
+            _shape.transform.position = (_initPoint + creationPoint.transform.position) * 0.5f;
         }
     }
 
@@ -86,9 +87,11 @@ public class Shapes : MonoBehaviour
         {
             case ShapeType.Line:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                _shape.name = "Line";
                 break;
             case ShapeType.Plane:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                _shape.name = "Plane";
                 break;
             case ShapeType.Cube:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
