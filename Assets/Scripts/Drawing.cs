@@ -84,6 +84,7 @@ public class Drawing : MonoBehaviour
         _triangles.Clear();
         _currentParent = new GameObject("Line");
         _lineBehaviour = _currentParent.AddComponent<LineBehaviour>();
+        _currentParent.AddComponent<Selectable>();
 
         Material mat = new(Shader.Find("Standard"));
         mat.color = _lineColor;

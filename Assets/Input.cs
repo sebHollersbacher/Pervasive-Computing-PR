@@ -55,6 +55,24 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b6fd388-10e4-4d6d-8214-1715a2b8d634"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Deselect"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ba35e14-2aef-4351-97e9-f0d627f2db99"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""7152a482-c7da-469a-884c-05184a7ce3a8"",
@@ -104,6 +122,50 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
                     ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""17d74278-ac19-4346-ba03-59409f443211"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7bba51e-3cf8-46c9-9c76-9b0b575b80f4"",
+                    ""path"": ""<OculusTouchController>{RightHand}/primaryButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;XR"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1322ef70-223d-4824-81c1-19bb876a255a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Deselect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7dbcf53b-0162-4971-a1f1-e8957e7f9199"",
+                    ""path"": ""<OculusTouchController>{RightHand}/secondaryButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;XR"",
+                    ""action"": ""Deselect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -804,6 +866,8 @@ public partial class @Input: IInputActionCollection2, IDisposable
         m_User_Look = m_User.FindAction("Look", throwIfNotFound: true);
         m_User_Move = m_User.FindAction("Move", throwIfNotFound: true);
         m_User_Interact = m_User.FindAction("Interact", throwIfNotFound: true);
+        m_User_Select = m_User.FindAction("Select", throwIfNotFound: true);
+        m_User_Deselect = m_User.FindAction("Deselect", throwIfNotFound: true);
         m_User_Menu = m_User.FindAction("Menu", throwIfNotFound: true);
         m_User_ShapeMenu = m_User.FindAction("Shape Menu", throwIfNotFound: true);
         // UI
@@ -888,6 +952,8 @@ public partial class @Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_User_Look;
     private readonly InputAction m_User_Move;
     private readonly InputAction m_User_Interact;
+    private readonly InputAction m_User_Select;
+    private readonly InputAction m_User_Deselect;
     private readonly InputAction m_User_Menu;
     private readonly InputAction m_User_ShapeMenu;
     public struct UserActions
@@ -897,6 +963,8 @@ public partial class @Input: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_User_Look;
         public InputAction @Move => m_Wrapper.m_User_Move;
         public InputAction @Interact => m_Wrapper.m_User_Interact;
+        public InputAction @Select => m_Wrapper.m_User_Select;
+        public InputAction @Deselect => m_Wrapper.m_User_Deselect;
         public InputAction @Menu => m_Wrapper.m_User_Menu;
         public InputAction @ShapeMenu => m_Wrapper.m_User_ShapeMenu;
         public InputActionMap Get() { return m_Wrapper.m_User; }
@@ -917,6 +985,12 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Select.started += instance.OnSelect;
+            @Select.performed += instance.OnSelect;
+            @Select.canceled += instance.OnSelect;
+            @Deselect.started += instance.OnDeselect;
+            @Deselect.performed += instance.OnDeselect;
+            @Deselect.canceled += instance.OnDeselect;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
@@ -936,6 +1010,12 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Select.started -= instance.OnSelect;
+            @Select.performed -= instance.OnSelect;
+            @Select.canceled -= instance.OnSelect;
+            @Deselect.started -= instance.OnDeselect;
+            @Deselect.performed -= instance.OnDeselect;
+            @Deselect.canceled -= instance.OnDeselect;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
@@ -1127,6 +1207,8 @@ public partial class @Input: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnSelect(InputAction.CallbackContext context);
+        void OnDeselect(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnShapeMenu(InputAction.CallbackContext context);
     }

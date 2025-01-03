@@ -7,14 +7,14 @@ using UnityEngine.InputSystem;
 public class Shapes : MonoBehaviour
 {
     private InputAction _interactAction;
-    private bool _inputEnabled = false;
+    private bool _inputEnabled = true;
     private bool _isCreating = false;
 
     public Transform creationPoint;
     private GameObject _shape;
     private Vector3 _initPoint;
     public Color ShapeColor { get; set; } = Color.red;
-    public ShapeType SelectedShapeType { get; set; } = ShapeType.Line;
+    public ShapeType SelectedShapeType { get; set; } = ShapeType.Cube;
     public float Radius { get; set; } = 0.03f;
 
     public enum ShapeType
@@ -117,6 +117,8 @@ public class Shapes : MonoBehaviour
 
     private void FinishCreateShape(InputAction.CallbackContext ctx)
     {
+        _shape.GetComponent<Collider>().isTrigger = true;
+        _shape.AddComponent<Selectable>();
         _isCreating = false;
     }
     
