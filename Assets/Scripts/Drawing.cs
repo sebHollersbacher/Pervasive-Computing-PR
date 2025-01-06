@@ -33,6 +33,7 @@ public class Drawing : MonoBehaviour
         _interactAction = Input.Instance.User.Interact;
         _interactAction.Enable();
         _interactAction.performed += InitDrawingMesh;
+        _interactAction.canceled += FinishDrawingMesh;
     }
 
     private void OnDisable()
@@ -93,6 +94,14 @@ public class Drawing : MonoBehaviour
         _mesh.MarkDynamic();
 
         _prevPoint = brush.transform.position;
+    }
+    
+    private void FinishDrawingMesh(InputAction.CallbackContext context)
+    {
+        var meshCollider = _currentParent.AddComponent<MeshCollider>();
+        meshCollider.sharedMesh = _mesh;
+        meshCollider.convex = true; // TODO: line is not convex (See SegmentCollider for right collision detection)
+        meshCollider.isTrigger = true;
     }
 
     #endregion

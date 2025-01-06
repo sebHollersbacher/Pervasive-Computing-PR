@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UI : MonoBehaviour
@@ -11,9 +12,11 @@ public class UI : MonoBehaviour
     public Drawing drawingScript;
     public Erasing erasingScript;
     public Shapes shapeScript;
+    public Selecting selectScript;
     
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
+    public GameObject selectionCanvas;
     
     private Button _drawingButton;
     private Button _eraseButton;
@@ -25,17 +28,24 @@ public class UI : MonoBehaviour
     private Button _cylinderButton;
     private Button _pyramidButton;
     
+    private Button _deleteButton;
+    private Button _moveButton;
+    private Button _rotateButton;
+    private Button _scaleButton;
+    private Button _alignPosButton;
+    private Button _alignRotButton;
+
     private void Start()
     {
         _userScript = GetComponentInChildren<UserScript>();
-        
         var buttons = drawingCanvas.GetComponentsInChildren<Button>();
         AssignButtons(buttons);
         buttons = shapeCanvas.GetComponentsInChildren<Button>();
         AssignButtons(buttons);
+        buttons = selectionCanvas.GetComponentsInChildren<Button>();
+        AssignButtons(buttons);
         
         DisableAll();
-        DrawingButton();
     }
 
     public void DrawingButton()
@@ -51,6 +61,29 @@ public class UI : MonoBehaviour
         _eraseButton.interactable = false;
         _userScript.ChangeMode(UserScript.Mode.Erasing);
     }
+    
+    public void HandleSelectionButton(Button button)
+    {
+        DisableAll();
+        button.interactable = false;
+        _userScript.ChangeMode(UserScript.Mode.Selection);
+
+        switch (button.name)
+        {
+            case "DeleteButton": selectScript.DeleteSelection(); break;
+            case "MoveButton":
+                selectScript.ChangeSelectionMode(Selecting.SelectionMode.Move);
+                break;
+            case "RotateButton": 
+                selectScript.ChangeSelectionMode(Selecting.SelectionMode.Rotate); 
+                break;
+            case "ScaleButton": 
+                selectScript.ChangeSelectionMode(Selecting.SelectionMode.Scale); 
+                break;
+            case "AlignRotationButton": break;
+            case "AlignPositionButton": break;
+        }
+    } 
 
     public void ChangeShapeButton(Button button)
     {
@@ -86,6 +119,7 @@ public class UI : MonoBehaviour
     {
         _drawingButton.interactable = true;
         _eraseButton.interactable = true;
+        
         _lineButton.interactable = true;
         _planeButton.interactable = true;
         _cubeButton.interactable = true;
@@ -93,8 +127,12 @@ public class UI : MonoBehaviour
         _cylinderButton.interactable = true;
         _pyramidButton.interactable = true;
         
-        erasingScript.DisableInputs();
-        drawingScript.DisableInputs();
+        _deleteButton.interactable = true;
+        _moveButton.interactable = true;
+        _rotateButton.interactable = true;
+        _scaleButton.interactable = true;
+        _alignPosButton.interactable = true;
+        _alignRotButton.interactable = true;
     }
     
     private void AssignButtons(Button[] buttons)
@@ -110,8 +148,15 @@ public class UI : MonoBehaviour
                 case "PlaneButton": _planeButton = button; break;
                 case "CubeButton": _cubeButton = button; break;
                 case "SphereButton": _sphereButton = button; break;
-                case "CylinderButton":_cylinderButton = button; break;
+                case "CylinderButton": _cylinderButton = button; break;
                 case "PyramidButton": _pyramidButton = button; break;
+                
+                case "DeleteButton": _deleteButton = button; break;
+                case "MoveButton": _moveButton = button; break;
+                case "RotateButton": _rotateButton = button; break;
+                case "ScaleButton": _scaleButton = button; break;
+                case "AlignPositionButton": _alignPosButton = button; break;
+                case "AlignRotationButton": _alignRotButton = button; break;
             }
         }
     }

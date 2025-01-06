@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -9,17 +10,20 @@ public class UserScript : MonoBehaviour
     public GameObject rayInteractor;
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
+    public GameObject selectionCanvas;
     
     private Mode _currentMode = Mode.Shape;
     private Drawing _drawing;
     private Erasing _erasing;
     private Shapes _shapes;
+    private Selecting _selection;
 
     public enum Mode
     {
         Drawing,
         Erasing,
-        Shape
+        Shape,
+        Selection
     }
 
     // Input
@@ -28,6 +32,7 @@ public class UserScript : MonoBehaviour
     private InputAction _lookMouseAction;
     private InputAction _menuAction;
     private InputAction _shapeMenuAction;
+    private InputAction _selectionMenuAction;
 
     public float mouseSensitivity = 20f;
     private float _rotationX;
@@ -58,6 +63,11 @@ public class UserScript : MonoBehaviour
         _shapeMenuAction.Enable();
         _shapeMenuAction.performed += OpenShapeMenu;
         _shapeMenuAction.canceled += CloseShapeMenu;
+        
+        _selectionMenuAction = _inputs.User.SelectionMenu;
+        _selectionMenuAction.Enable();
+        _selectionMenuAction.performed += OpenSelectionMenu;
+        _selectionMenuAction.canceled += CloseSelectionMenu;
     }
 
     private void OnDisable()
@@ -74,6 +84,7 @@ public class UserScript : MonoBehaviour
         _drawing = GetComponentInChildren<Drawing>();
         _erasing = GetComponentInChildren<Erasing>();
         _shapes = GetComponentInChildren<Shapes>();
+        _selection = GetComponentInChildren<Selecting>();
 
         if (OVRManager.OVRManagerinitialized)
         {
@@ -94,8 +105,11 @@ public class UserScript : MonoBehaviour
         
         drawingCanvas.SetActive(false);
         shapeCanvas.SetActive(false);
+        selectionCanvas.SetActive(false);
         rayInteractor.SetActive(false);
-        _drawing.EnableInputs();
+        
+        DisableMode();
+        EnableMode();
     }
 
     private void Update()
@@ -131,22 +145,23 @@ public class UserScript : MonoBehaviour
             case Mode.Drawing: _drawing.EnableInputs(); break;
             case Mode.Erasing: _erasing.EnableInputs(); break;
             case Mode.Shape: _shapes.EnableInputs(); break;
+            case Mode.Selection: _selection.EnableInputs(); break;
         }
     }
     
     private void DisableMode()
     {
-        switch (_currentMode)
-        {
-            case Mode.Drawing: _drawing.DisableInputs(); break;
-            case Mode.Erasing: _erasing.DisableInputs(); break;
-            case Mode.Shape: _shapes.DisableInputs(); break;
-        }
+        _drawing.DisableInputs();
+        _erasing.DisableInputs();
+        _shapes.DisableInputs();
+        _selection.DisableInputs();
     }
 
     public void ChangeMode(Mode mode)
     {
         _currentMode = mode;
+        DisableMode();
+        EnableMode();
     }
 
     private void OpenMenu(InputAction.CallbackContext ctx)
@@ -154,6 +169,7 @@ public class UserScript : MonoBehaviour
         DisableMode();
         rayInteractor.SetActive(true);
         shapeCanvas.SetActive(false);
+        selectionCanvas.SetActive(false);
         drawingCanvas.SetActive(true);
     }
 
@@ -169,12 +185,29 @@ public class UserScript : MonoBehaviour
         DisableMode();
         rayInteractor.SetActive(true);
         drawingCanvas.SetActive(false);
+        selectionCanvas.SetActive(false);
         shapeCanvas.SetActive(true);
     }
     
     private void CloseShapeMenu(InputAction.CallbackContext ctx)
     {
         shapeCanvas.SetActive(false);
+        rayInteractor.SetActive(false);
+        EnableMode();
+    }
+    
+    private void OpenSelectionMenu(InputAction.CallbackContext ctx)
+    {
+        DisableMode();
+        rayInteractor.SetActive(true);
+        drawingCanvas.SetActive(false);
+        shapeCanvas.SetActive(false);
+        selectionCanvas.SetActive(true);
+    }
+    
+    private void CloseSelectionMenu(InputAction.CallbackContext ctx)
+    {
+        selectionCanvas.SetActive(false);
         rayInteractor.SetActive(false);
         EnableMode();
     }

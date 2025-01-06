@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class Shapes : MonoBehaviour
 {
     private InputAction _interactAction;
-    private bool _inputEnabled = true;
+    private bool _inputEnabled = false;
     private bool _isCreating = false;
 
     public Transform creationPoint;
@@ -152,7 +152,10 @@ public class Shapes : MonoBehaviour
         mesh.RecalculateNormals();
 
         pyramid.AddComponent<MeshRenderer>();
-        pyramid.AddComponent<MeshCollider>().sharedMesh = mesh;
+        var meshCollider = pyramid.AddComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
+        meshCollider.convex = true;
+        
         return pyramid;
     }
 }

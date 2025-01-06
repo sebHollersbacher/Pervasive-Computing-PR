@@ -89,6 +89,15 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Selection Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""03dd938e-382d-43d1-a477-c6e7970238ac"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -276,6 +285,17 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
                     ""action"": ""Shape Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9420da2d-cd95-4613-b7c5-53b94c7235b1"",
+                    ""path"": ""<OculusTouchController>{LeftHand}/secondaryButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;XR"",
+                    ""action"": ""Selection Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -870,6 +890,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         m_User_Deselect = m_User.FindAction("Deselect", throwIfNotFound: true);
         m_User_Menu = m_User.FindAction("Menu", throwIfNotFound: true);
         m_User_ShapeMenu = m_User.FindAction("Shape Menu", throwIfNotFound: true);
+        m_User_SelectionMenu = m_User.FindAction("Selection Menu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -956,6 +977,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_User_Deselect;
     private readonly InputAction m_User_Menu;
     private readonly InputAction m_User_ShapeMenu;
+    private readonly InputAction m_User_SelectionMenu;
     public struct UserActions
     {
         private @Input m_Wrapper;
@@ -967,6 +989,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         public InputAction @Deselect => m_Wrapper.m_User_Deselect;
         public InputAction @Menu => m_Wrapper.m_User_Menu;
         public InputAction @ShapeMenu => m_Wrapper.m_User_ShapeMenu;
+        public InputAction @SelectionMenu => m_Wrapper.m_User_SelectionMenu;
         public InputActionMap Get() { return m_Wrapper.m_User; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -997,6 +1020,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @ShapeMenu.started += instance.OnShapeMenu;
             @ShapeMenu.performed += instance.OnShapeMenu;
             @ShapeMenu.canceled += instance.OnShapeMenu;
+            @SelectionMenu.started += instance.OnSelectionMenu;
+            @SelectionMenu.performed += instance.OnSelectionMenu;
+            @SelectionMenu.canceled += instance.OnSelectionMenu;
         }
 
         private void UnregisterCallbacks(IUserActions instance)
@@ -1022,6 +1048,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @ShapeMenu.started -= instance.OnShapeMenu;
             @ShapeMenu.performed -= instance.OnShapeMenu;
             @ShapeMenu.canceled -= instance.OnShapeMenu;
+            @SelectionMenu.started -= instance.OnSelectionMenu;
+            @SelectionMenu.performed -= instance.OnSelectionMenu;
+            @SelectionMenu.canceled -= instance.OnSelectionMenu;
         }
 
         public void RemoveCallbacks(IUserActions instance)
@@ -1211,6 +1240,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         void OnDeselect(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnShapeMenu(InputAction.CallbackContext context);
+        void OnSelectionMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
