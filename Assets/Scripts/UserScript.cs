@@ -8,9 +8,12 @@ public class UserScript : MonoBehaviour
     private bool _debug;
     public Transform rightController;
     public GameObject rayInteractor;
+    
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
+    public GameObject alignPositionCanvas;
+    public GameObject alignRotationCanvas;
     
     private Mode _currentMode = Mode.Shape;
     private Drawing _drawing;
@@ -106,6 +109,8 @@ public class UserScript : MonoBehaviour
         drawingCanvas.SetActive(false);
         shapeCanvas.SetActive(false);
         selectionCanvas.SetActive(false);
+        alignPositionCanvas.SetActive(false);
+        alignRotationCanvas.SetActive(false);
         rayInteractor.SetActive(false);
         
         DisableMode();
@@ -208,7 +213,18 @@ public class UserScript : MonoBehaviour
     private void CloseSelectionMenu(InputAction.CallbackContext ctx)
     {
         selectionCanvas.SetActive(false);
+        alignPositionCanvas.SetActive(false);
+        alignRotationCanvas.SetActive(false);
         rayInteractor.SetActive(false);
         EnableMode();
+    }
+
+    public void OpenAlignMenu(bool position)
+    {
+        selectionCanvas.SetActive(false);
+        if(position)
+            alignPositionCanvas.SetActive(true);
+        else
+            alignRotationCanvas.SetActive(true);
     }
 }

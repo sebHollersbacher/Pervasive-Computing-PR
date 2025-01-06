@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,14 +21,24 @@ public class Selecting : MonoBehaviour
     public HashSet<Selectable> selected = new();
 
     private SelectionMode _mode = SelectionMode.Move;
-    private Vector3 _startPoint;
-    private Quaternion _startRotation;
+    private Vector3 _prevPosition;
+    private Quaternion _prevRotation;
     
     public enum SelectionMode
     {
         Move,
         Rotate,
         Scale
+    }
+
+    public enum Alignments
+    {
+        Top = 1,
+        Left = 2,
+        Front = 3,
+        Back = 4,
+        Right = 5,
+        Bottom = 6
     }
     
     private void OnEnable()
@@ -79,28 +90,31 @@ public class Selecting : MonoBehaviour
             _shape.transform.localScale = new Vector3(size, size, size);
         }
 
+        if (!_inputEnabled) return;
         float interactionButton = _interactAction.ReadValue<float>();
         if (interactionButton != 0f)
         {
             switch (_mode)
             {
                 case SelectionMode.Move:
-                    // Debug.Log("Move");
-                    MoveSelection(creationPoint.transform.position - _startPoint);
+                    MoveSelection(creationPoint.transform.position - _prevPosition);
                     break;
                 case SelectionMode.Rotate:
-                    RotateSelection(creationPoint.transform.rotation * Quaternion.Inverse(_startRotation));
+                    RotateSelection(_prevRotation * Quaternion.Inverse(creationPoint.transform.rotation));
                     break;
                 case SelectionMode.Scale:
+                    ScaleSelection(creationPoint.transform.position - _prevPosition);
                     break;
             }
         }
+        _prevPosition = creationPoint.transform.position;
+        _prevRotation = creationPoint.transform.rotation;
     }
 
     private void InitSelectionManipulation(InputAction.CallbackContext ctx)
     {
-        _startPoint = creationPoint.transform.position;
-        _startRotation = creationPoint.transform.rotation;
+        _prevPosition = creationPoint.transform.position;
+        _prevRotation = creationPoint.transform.rotation;
     }
     
     private void InitCreateShape(InputAction.CallbackContext ctx)
@@ -149,25 +163,69 @@ public class Selecting : MonoBehaviour
 
     public void DeleteSelection()
     {
-        foreach (var selectable in selected)
-        {
-            Destroy(selectable.gameObject);
-        }
+        selected.ToList().ForEach(selectedObject => Destroy(selectedObject.gameObject));
+        selected.Clear();
     }
     
     private void MoveSelection(Vector3 difference)
     {
-        foreach (var selectable in selected)
-        {
-            selectable.Move(difference);
-        }
+        selected.ToList().ForEach(selectedObject => selectedObject.Move(difference));
     }
     
     private void RotateSelection(Quaternion difference)
     {
-        foreach (var selectable in selected)
+        selected.ToList().ForEach(selectedObject => selectedObject.Rotate(difference));
+    }
+    
+    private void ScaleSelection(Vector3 difference)
+    {
+        selected.ToList().ForEach(selectedObject => selectedObject.Scale(difference));
+    }
+
+    public void AlignPosition(int alignment)
+    {
+        var list = selected.ToList();
+        switch ((Alignments)alignment)
         {
-            selectable.Rotate(difference);
+            case Alignments.Top:
+                break;
+            case Alignments.Bottom:
+                list.ForEach(sele => sele.SetXPosition(0));
+                break;
+            case Alignments.Left:
+                list.ForEach(sele => sele.SetYPosition(0));
+                break;
+            case Alignments.Right:
+                break;
+            case Alignments.Front:
+                break;
+            case Alignments.Back:
+                list.ForEach(sele => sele.SetZPosition(0));
+                break;
+        }
+    }
+    
+    public void AlignRotation(int alignment)
+    {
+        var list = selected.ToList();
+        switch ((Alignments)alignment)
+        {
+            case Alignments.Top:
+                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 0f, 0f, 1f)));
+                break;
+            case Alignments.Bottom:
+                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 0f, 90f, 1f)));
+                break;
+            case Alignments.Left:
+                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 90f, 90f, 1f)));
+                break;
+            case Alignments.Right:
+                list.ForEach(sele => sele.SetRotation(new Quaternion(45f, 0f, 0f, 1f)));
+                break;
+            case Alignments.Front:
+                break;
+            case Alignments.Back:
+                break;
         }
     }
     

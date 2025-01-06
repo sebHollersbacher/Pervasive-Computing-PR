@@ -17,6 +17,8 @@ public class UI : MonoBehaviour
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
+    public GameObject alignPositionCanvas;
+    public GameObject alignRotationCanvas;
     
     private Button _drawingButton;
     private Button _eraseButton;
@@ -65,23 +67,27 @@ public class UI : MonoBehaviour
     public void HandleSelectionButton(Button button)
     {
         DisableAll();
-        button.interactable = false;
-        _userScript.ChangeMode(UserScript.Mode.Selection);
 
         switch (button.name)
         {
             case "DeleteButton": selectScript.DeleteSelection(); break;
             case "MoveButton":
+                button.interactable = false;
+                _userScript.ChangeMode(UserScript.Mode.Selection);
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Move);
                 break;
             case "RotateButton": 
+                button.interactable = false;
+                _userScript.ChangeMode(UserScript.Mode.Selection);
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Rotate); 
                 break;
             case "ScaleButton": 
+                button.interactable = false;
+                _userScript.ChangeMode(UserScript.Mode.Selection);
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Scale); 
                 break;
-            case "AlignRotationButton": break;
-            case "AlignPositionButton": break;
+            case "AlignPositionButton": _userScript.OpenAlignMenu(true); break;
+            case "AlignRotationButton": _userScript.OpenAlignMenu(false); break;
         }
     } 
 
@@ -127,12 +133,9 @@ public class UI : MonoBehaviour
         _cylinderButton.interactable = true;
         _pyramidButton.interactable = true;
         
-        _deleteButton.interactable = true;
         _moveButton.interactable = true;
         _rotateButton.interactable = true;
         _scaleButton.interactable = true;
-        _alignPosButton.interactable = true;
-        _alignRotButton.interactable = true;
     }
     
     private void AssignButtons(Button[] buttons)
@@ -151,12 +154,9 @@ public class UI : MonoBehaviour
                 case "CylinderButton": _cylinderButton = button; break;
                 case "PyramidButton": _pyramidButton = button; break;
                 
-                case "DeleteButton": _deleteButton = button; break;
                 case "MoveButton": _moveButton = button; break;
                 case "RotateButton": _rotateButton = button; break;
                 case "ScaleButton": _scaleButton = button; break;
-                case "AlignPositionButton": _alignPosButton = button; break;
-                case "AlignRotationButton": _alignRotButton = button; break;
             }
         }
     }
