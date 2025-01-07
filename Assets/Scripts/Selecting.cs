@@ -11,7 +11,6 @@ public class Selecting : MonoBehaviour
     private InputAction _interactAction;
     
     private bool _inputEnabled = true;
-    private bool _isCreating = false;
     
     public Transform creationPoint;
     private GameObject _shape;
@@ -82,7 +81,6 @@ public class Selecting : MonoBehaviour
     
     private void FixedUpdate()
     {
-        // if (!_isCreating) return;
         float selectionButton = _selectAction.ReadValue<float>();
         if (selectionButton != 0f)
         {
@@ -119,7 +117,6 @@ public class Selecting : MonoBehaviour
     
     private void InitCreateShape(InputAction.CallbackContext ctx)
     {
-        _isCreating = true;
         _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _collider =_shape.AddComponent<ColliderContainer>();
         Rigidbody rb = _shape.AddComponent<Rigidbody>();
@@ -152,7 +149,6 @@ public class Selecting : MonoBehaviour
             if (selectable != null) selected.Add(selectable);
         }
 
-        _isCreating = false;
         Destroy(_shape);
     }
 
@@ -185,22 +181,32 @@ public class Selecting : MonoBehaviour
     public void AlignPosition(int alignment)
     {
         var list = selected.ToList();
+        var positions = list.Select(selectable => selectable.gameObject.transform.position);
         switch ((Alignments)alignment)
         {
-            case Alignments.Top:
-                break;
-            case Alignments.Bottom:
-                list.ForEach(sele => sele.SetXPosition(0));
-                break;
             case Alignments.Left:
-                list.ForEach(sele => sele.SetYPosition(0));
+                float lowestX = positions.Min(position => position.x);
+                list.ForEach(selectedObject => selectedObject.SetXPosition(lowestX));
                 break;
             case Alignments.Right:
+                float highestX = positions.Max(position => position.x);
+                list.ForEach(selectedObject => selectedObject.SetXPosition(highestX));
+                break;
+            case Alignments.Bottom:
+                float lowestY = positions.Min(position => position.y);
+                list.ForEach(selectedObject => selectedObject.SetYPosition(lowestY));
+                break;
+            case Alignments.Top:
+                float highestY = positions.Max(position => position.y);
+                list.ForEach(selectedObject => selectedObject.SetYPosition(highestY));
                 break;
             case Alignments.Front:
+                float lowestZ = positions.Min(position => position.z);
+                list.ForEach(selectedObject => selectedObject.SetZPosition(lowestZ));
                 break;
             case Alignments.Back:
-                list.ForEach(sele => sele.SetZPosition(0));
+                float highestZ = positions.Max(position => position.z);
+                list.ForEach(selectedObject => selectedObject.SetZPosition(highestZ));
                 break;
         }
     }
@@ -211,20 +217,22 @@ public class Selecting : MonoBehaviour
         switch ((Alignments)alignment)
         {
             case Alignments.Top:
-                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 0f, 0f, 1f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.identity));
                 break;
             case Alignments.Bottom:
-                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 0f, 90f, 1f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(180f, 0f, 0f)));
                 break;
             case Alignments.Left:
-                list.ForEach(sele => sele.SetRotation(new Quaternion(0f, 90f, 90f, 1f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(0f, 0f, 90f)));
                 break;
             case Alignments.Right:
-                list.ForEach(sele => sele.SetRotation(new Quaternion(45f, 0f, 0f, 1f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(0f, 0f, -90f)));
                 break;
             case Alignments.Front:
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(90f, 0f, 0f)));
                 break;
             case Alignments.Back:
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(-90f, 0f, 0f)));
                 break;
         }
     }
@@ -235,7 +243,6 @@ public class Selecting : MonoBehaviour
         public HashSet<GameObject> GetColliders () { return _colliders; }
  
         private void OnTriggerEnter (Collider other) {
-            Debug.Log("enter");
             _colliders.Add(other.gameObject);
         }
  
