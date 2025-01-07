@@ -122,20 +122,9 @@ public class Selecting : MonoBehaviour
         _collider =_shape.AddComponent<ColliderContainer>();
         Rigidbody rb = _shape.AddComponent<Rigidbody>();
         rb.isKinematic = true;
-
-        Material material = new(Shader.Find("Standard"));   
         
-        // Make material transparent (Not working for Quest yet)
-        material.SetFloat("_Mode", 3);
-        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        material.SetInt("_ZWrite", 0);
-        material.DisableKeyword("_ALPHATEST_ON");
-        material.EnableKeyword("_ALPHABLEND_ON");
-        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        material.renderQueue = 3000;
+        Material material = new(Shader.Find("Custom/TransparentShader"));
         
-        material.color = new Color(0f, 0f, 1f, .5f);
         _shape.GetComponent<MeshRenderer>().material = material;
         _shape.transform.position = creationPoint.transform.position;
         _shape.transform.localScale = Vector3.zero;
