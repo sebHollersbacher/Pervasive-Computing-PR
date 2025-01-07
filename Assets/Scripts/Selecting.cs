@@ -76,6 +76,7 @@ public class Selecting : MonoBehaviour
 
     private void ClearSelection(InputAction.CallbackContext ctx)
     {
+        selected.ToList().ForEach(selectedObject => selectedObject.Deselect());
         selected.Clear();
     }
     
@@ -146,7 +147,11 @@ public class Selecting : MonoBehaviour
         foreach (var go in _collider.GetColliders())
         {
             Selectable selectable = go.GetComponent<Selectable>();
-            if (selectable != null) selected.Add(selectable);
+            if (selectable != null)
+            {
+                selected.Add(selectable);
+                selectable.Select();
+            }
         }
 
         Destroy(_shape);

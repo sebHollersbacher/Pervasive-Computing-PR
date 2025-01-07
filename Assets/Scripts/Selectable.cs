@@ -1,9 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Selectable : MonoBehaviour
 {
+    private void Awake()
+    {
+        if (gameObject.GetComponent<Outline>() == null)
+        {
+            var outline = gameObject.AddComponent<Outline>();
+            outline.OutlineColor = Color.blue;
+            outline.OutlineWidth = 10f;
+            outline.enabled = false;
+        }
+    }
+
+    public void Select()
+    {
+        gameObject.GetComponent<Outline>().enabled = true;
+    }
+
+    public void Deselect()
+    {
+        gameObject.GetComponent<Outline>().enabled = false;
+    }
+
     public void Move(Vector3 difference)
     {
         gameObject.transform.position += difference;
