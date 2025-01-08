@@ -85,8 +85,12 @@ public class Selecting : MonoBehaviour
         float selectionButton = _selectAction.ReadValue<float>();
         if (selectionButton != 0f)
         {
-            var size = Vector3.Magnitude(creationPoint.transform.position - _initPoint);
-            _shape.transform.localScale = new Vector3(size, size, size);
+            _shape.transform.position = (creationPoint.transform.position + _initPoint) / 2;
+            _shape.transform.localScale = new Vector3(
+                Mathf.Abs(creationPoint.transform.position.x - _initPoint.x),
+                Mathf.Abs(creationPoint.transform.position.y - _initPoint.y),
+                Mathf.Abs(creationPoint.transform.position.z - _initPoint.z)
+            );
         }
 
         if (!_inputEnabled) return;
