@@ -54,7 +54,7 @@ public class Selectable : MonoBehaviour
 
     public void Rotate(Quaternion difference)
     {
-        gameObject.transform.rotation *= Quaternion.Inverse(difference);
+        gameObject.transform.rotation = difference * gameObject.transform.rotation;
     }
     
     public void SetRotation(Quaternion roation)

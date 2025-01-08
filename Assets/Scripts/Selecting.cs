@@ -103,7 +103,7 @@ public class Selecting : MonoBehaviour
                     MoveSelection(creationPoint.transform.position - _prevPosition);
                     break;
                 case SelectionMode.Rotate:
-                    RotateSelection(_prevRotation * Quaternion.Inverse(creationPoint.transform.rotation));
+                    RotateSelection(creationPoint.transform.rotation * Quaternion.Inverse(_prevRotation));
                     break;
                 case SelectionMode.Scale:
                     ScaleSelection(creationPoint.transform.position - _prevPosition);
