@@ -85,7 +85,6 @@ public class Drawing : MonoBehaviour
         _triangles.Clear();
         _currentParent = new GameObject("Line");
         _lineBehaviour = _currentParent.AddComponent<LineBehaviour>();
-        _currentParent.AddComponent<Selectable>();
 
         Material mat = new(Shader.Find("Standard"));
         mat.color = _lineColor;
@@ -98,6 +97,7 @@ public class Drawing : MonoBehaviour
     
     private void FinishDrawingMesh(InputAction.CallbackContext context)
     {
+        _currentParent.AddComponent<Selectable>();
         var meshCollider = _currentParent.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = _mesh;
         meshCollider.convex = true; // TODO: line is not convex (See SegmentCollider for right collision detection)
