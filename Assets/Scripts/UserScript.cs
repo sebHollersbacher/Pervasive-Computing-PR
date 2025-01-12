@@ -12,8 +12,7 @@ public class UserScript : MonoBehaviour
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
-    public GameObject alignPositionCanvas;
-    public GameObject alignRotationCanvas;
+    public GameObject alignmentObject;
     
     private Mode _currentMode = Mode.Drawing;
     private Drawing _drawing;
@@ -109,8 +108,7 @@ public class UserScript : MonoBehaviour
         drawingCanvas.SetActive(false);
         shapeCanvas.SetActive(false);
         selectionCanvas.SetActive(false);
-        alignPositionCanvas.SetActive(false);
-        alignRotationCanvas.SetActive(false);
+        alignmentObject.SetActive(false);
         rayInteractor.SetActive(false);
         
         DisableMode();
@@ -141,6 +139,15 @@ public class UserScript : MonoBehaviour
         }
 
         #endregion
+    }
+    
+    private void FixedUpdate()
+    {
+        if (alignmentObject.activeSelf)
+        {
+            Debug.Log("Alignment Object");
+            alignmentObject.transform.rotation = Quaternion.Euler(0,0,0);
+        }
     }
 
     private void EnableMode()
@@ -213,8 +220,7 @@ public class UserScript : MonoBehaviour
     private void CloseSelectionMenu(InputAction.CallbackContext ctx)
     {
         selectionCanvas.SetActive(false);
-        alignPositionCanvas.SetActive(false);
-        alignRotationCanvas.SetActive(false);
+        alignmentObject.SetActive(false);
         rayInteractor.SetActive(false);
         EnableMode();
     }
@@ -222,9 +228,7 @@ public class UserScript : MonoBehaviour
     public void OpenAlignMenu(bool position)
     {
         selectionCanvas.SetActive(false);
-        if(position)
-            alignPositionCanvas.SetActive(true);
-        else
-            alignRotationCanvas.SetActive(true);
+        alignmentObject.SetActive(true);
+        _selection.alignPosition = position;
     }
 }

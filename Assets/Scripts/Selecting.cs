@@ -11,6 +11,7 @@ public class Selecting : MonoBehaviour
     private InputAction _interactAction;
     
     private bool _inputEnabled = true;
+    public bool alignPosition { private get; set; }
     
     public Transform creationPoint;
     private GameObject _shape;
@@ -176,6 +177,14 @@ public class Selecting : MonoBehaviour
         selected.ToList().ForEach(selectedObject => selectedObject.Scale(difference));
     }
 
+    public void Alignment(int alignment)
+    {
+        if (alignPosition)
+            AlignPosition(alignment);
+        else 
+            AlignRotation(alignment);
+    }
+
     public void AlignPosition(int alignment)
     {
         var list = selected.ToList();
@@ -227,10 +236,10 @@ public class Selecting : MonoBehaviour
                 list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(0f, 0f, -90f)));
                 break;
             case Alignments.Front:
-                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(90f, 0f, 0f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(-90f, 0f, 0f)));
                 break;
             case Alignments.Back:
-                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(-90f, 0f, 0f)));
+                list.ForEach(selectedObject => selectedObject.SetRotation(Quaternion.Euler(90f, 0f, 0f)));
                 break;
         }
     }

@@ -17,8 +17,6 @@ public class UI : MonoBehaviour
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
-    public GameObject alignPositionCanvas;
-    public GameObject alignRotationCanvas;
     
     private Button _drawingButton;
     private Button _eraseButton;
