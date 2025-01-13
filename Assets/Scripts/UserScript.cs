@@ -14,27 +14,30 @@ public class UserScript : MonoBehaviour
     public GameObject selectionCanvas;
     public GameObject alignmentObject;
     
-    private Mode _currentMode = Mode.Drawing;
+    public Mode _currentMode = Mode.Shape;
+    private Mode _prevMode = Mode.Shape;
     private Drawing _drawing;
     private Erasing _erasing;
     private Shapes _shapes;
     private Selecting _selection;
+    private Shaping _shaping;
 
     public enum Mode
     {
         Drawing,
         Erasing,
         Shape,
-        Selection
+        Selection,
+        Shaping
     }
 
     // Input
-    private Input _inputs;
     private InputAction _moveControllerAction;
     private InputAction _lookMouseAction;
     private InputAction _menuAction;
     private InputAction _shapeMenuAction;
     private InputAction _selectionMenuAction;
+    private InputAction _shapingAction;
 
     public float mouseSensitivity = 20f;
     private float _rotationX;
@@ -43,33 +46,53 @@ public class UserScript : MonoBehaviour
     // General
     private OVRCameraRig _cameraRig;
 
-    private void Awake()
-    {
-        _inputs = Input.Instance;
-    }
-
     private void OnEnable()
     {
-        _moveControllerAction = _inputs.User.Move;
+        _moveControllerAction = Input.Instance.User.Move;
         _moveControllerAction.Enable();
 
-        _lookMouseAction = _inputs.User.Look;
+        _lookMouseAction = Input.Instance.User.Look;
         _lookMouseAction.Enable();
 
-        _menuAction = _inputs.User.Menu;
+        _menuAction = Input.Instance.User.Menu;
         _menuAction.Enable();
         _menuAction.performed += OpenMenu;
         _menuAction.canceled += CloseMenu;
         
-        _shapeMenuAction = _inputs.User.ShapeMenu;
+        _shapeMenuAction = Input.Instance.User.ShapeMenu;
         _shapeMenuAction.Enable();
         _shapeMenuAction.performed += OpenShapeMenu;
         _shapeMenuAction.canceled += CloseShapeMenu;
         
-        _selectionMenuAction = _inputs.User.SelectionMenu;
+        _selectionMenuAction = Input.Instance.User.SelectionMenu;
         _selectionMenuAction.Enable();
         _selectionMenuAction.performed += OpenSelectionMenu;
         _selectionMenuAction.canceled += CloseSelectionMenu;
+        
+        _shapingAction = Input.Instance.User.Shaping;
+        _shapingAction.Enable();
+        _shapingAction.performed += ChangeShaping;
+        _shapingAction.canceled += ChangeFromShaping;
+    }
+    
+    private void ChangeShaping(InputAction.CallbackContext ctx)
+    {
+        DisableMode();
+        if(_currentMode == Mode.Shaping)
+            _currentMode = _prevMode;
+        else
+        {
+            _prevMode = _currentMode;
+            _currentMode = Mode.Shaping;
+        }
+        EnableMode();
+    }
+    
+    private void ChangeFromShaping(InputAction.CallbackContext ctx)
+    {
+        // DisableMode();
+        // _currentMode = _prevMode;
+        // EnableMode();
     }
 
     private void OnDisable()
@@ -87,6 +110,7 @@ public class UserScript : MonoBehaviour
         _erasing = GetComponentInChildren<Erasing>();
         _shapes = GetComponentInChildren<Shapes>();
         _selection = GetComponentInChildren<Selecting>();
+        _shaping = GetComponentInChildren<Shaping>();
 
         if (OVRManager.OVRManagerinitialized)
         {
@@ -158,6 +182,7 @@ public class UserScript : MonoBehaviour
             case Mode.Erasing: _erasing.EnableInputs(); break;
             case Mode.Shape: _shapes.EnableInputs(); break;
             case Mode.Selection: _selection.EnableInputs(); break;
+            case Mode.Shaping: _shaping.EnableInputs(); break;
         }
     }
     
@@ -167,6 +192,7 @@ public class UserScript : MonoBehaviour
         _erasing.DisableInputs();
         _shapes.DisableInputs();
         _selection.DisableInputs();
+        _shaping.DisableInputs();
     }
 
     public void ChangeMode(Mode mode)

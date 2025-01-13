@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder;
 
 public class Shapes : MonoBehaviour
 {
@@ -94,7 +96,26 @@ public class Shapes : MonoBehaviour
                 _shape.name = "Plane";
                 break;
             case ShapeType.Cube:
-                _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                var proBuilderMesh = ShapeGenerator.GenerateCube(PivotLocation.Center, Vector3.one);
+                _shape = proBuilderMesh.gameObject;
+                var meshCollider = _shape.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = _shape.GetComponent<MeshFilter>().sharedMesh;
+                meshCollider.convex = true;
+                
+                var vertices = proBuilderMesh.GetVertices();
+                for(int i = 0; i < vertices.Length; i++)
+                {
+                    var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    c.transform.parent = _shape.transform;
+                    c.transform.position = ((Vertex)vertices.GetValue(i)).position;
+                    c.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                    var shapeable = c.AddComponent<Shapeable>();
+                    shapeable.Index = i;
+                    shapeable.Mesh = proBuilderMesh;
+                    shapeable.SelectionPoint = c;
+                    c.GetComponent<Collider>().isTrigger = true;
+                }
+                _shape.name = "ProBuilderCube";
                 break;
             case ShapeType.Sphere:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Sphere);

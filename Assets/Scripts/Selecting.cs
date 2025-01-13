@@ -61,6 +61,7 @@ public class Selecting : MonoBehaviour
     {
         _selectAction.Disable();
         _deselectAction.Disable();
+        _interactAction.Disable();
     }
     
     public void DisableInputs()

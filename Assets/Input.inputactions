@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Shaping",
+                    "type": "Button",
+                    "id": "4093647c-a3f0-4840-9a17-17f8c6f000c2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Deselect",
                     "type": "Button",
                     "id": "1ba35e14-2aef-4351-97e9-f0d627f2db99",
@@ -131,6 +140,28 @@
                     "processors": "",
                     "groups": "Gamepad;XR",
                     "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e453f757-9590-4f15-a2ca-16a30e026d70",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Shaping",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "98e5fdff-9b45-44ce-8902-409f6cca3a42",
+                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;XR",
+                    "action": "Shaping",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
