@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,7 +8,8 @@ public class Selecting : MonoBehaviour
     private InputAction _selectAction;
     private InputAction _deselectAction;
     private InputAction _interactAction;
-    
+
+    public bool isShaping;
     private bool _inputEnabled = true;
     public bool alignPosition { private get; set; }
     
@@ -17,8 +17,6 @@ public class Selecting : MonoBehaviour
     private GameObject _shape;
     private Vector3 _initPoint;
     private ColliderContainer _collider;
-    
-    public HashSet<Selectable> selected = new();
 
     private SelectionMode _mode = SelectionMode.Move;
     private Vector3 _prevPosition;
@@ -31,7 +29,7 @@ public class Selecting : MonoBehaviour
         Scale
     }
 
-    public enum Alignments
+    enum Alignments
     {
         Top = 1,
         Left = 2,
@@ -78,8 +76,8 @@ public class Selecting : MonoBehaviour
 
     private void ClearSelection(InputAction.CallbackContext ctx)
     {
-        selected.ToList().ForEach(selectedObject => selectedObject.Deselect());
-        selected.Clear();
+        SceneManager.Instance.ClearSelectables();
+        SceneManager.Instance.ClearShapeables();
     }
     
     private void FixedUpdate()
@@ -133,6 +131,7 @@ public class Selecting : MonoBehaviour
         
         _shape.GetComponent<MeshRenderer>().material = material;
         _shape.transform.position = creationPoint.transform.position;
+        _shape.transform.rotation = creationPoint.transform.rotation;
         _shape.transform.localScale = Vector3.zero;
         _initPoint = creationPoint.transform.position;
     }
@@ -141,11 +140,22 @@ public class Selecting : MonoBehaviour
     {
         foreach (var go in _collider.GetColliders())
         {
-            Selectable selectable = go.GetComponent<Selectable>();
-            if (selectable != null)
+            if (isShaping)
             {
-                selected.Add(selectable);
-                selectable.Select();
+                VertexIndex vertex = go.GetComponent<VertexIndex>();
+                if (vertex != null)
+                {
+                    SceneManager.Instance.Add(vertex);
+                }
+            }
+            else
+            {
+                Selectable selectable = go.GetComponent<Selectable>();
+                if (selectable != null)
+                {
+                    SceneManager.Instance.Add(selectable);
+                    selectable.Select();
+                }
             }
         }
 
@@ -159,23 +169,23 @@ public class Selecting : MonoBehaviour
 
     public void DeleteSelection()
     {
-        selected.ToList().ForEach(selectedObject => Destroy(selectedObject.gameObject));
-        selected.Clear();
+        SceneManager.Instance.GetSelectables().ForEach(selectedObject => Destroy(selectedObject.gameObject));
+        SceneManager.Instance.ClearSelectables();
     }
     
     private void MoveSelection(Vector3 difference)
     {
-        selected.ToList().ForEach(selectedObject => selectedObject.Move(difference));
+        SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Move(difference));
     }
     
     private void RotateSelection(Quaternion difference)
     {
-        selected.ToList().ForEach(selectedObject => selectedObject.Rotate(difference));
+        SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Rotate(difference));
     }
     
     private void ScaleSelection(Vector3 difference)
     {
-        selected.ToList().ForEach(selectedObject => selectedObject.Scale(difference));
+        SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Scale(difference));
     }
 
     public void Alignment(int alignment)
@@ -188,7 +198,7 @@ public class Selecting : MonoBehaviour
 
     public void AlignPosition(int alignment)
     {
-        var list = selected.ToList();
+        var list = SceneManager.Instance.GetSelectables();
         var positions = list.Select(selectable => selectable.gameObject.transform.position);
         switch ((Alignments)alignment)
         {
@@ -221,7 +231,7 @@ public class Selecting : MonoBehaviour
     
     public void AlignRotation(int alignment)
     {
-        var list = selected.ToList();
+        var list = SceneManager.Instance.GetSelectables();
         switch ((Alignments)alignment)
         {
             case Alignments.Top:

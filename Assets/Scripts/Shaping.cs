@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,16 +8,9 @@ public class Shaping : MonoBehaviour
     
     public GameObject shaper;
     
-    private ShapingCollider _shapeCollider;
-
     private bool isActive;
     
     private Vector3 startPosition;
-
-    private void Awake()
-    {
-        _shapeCollider = shaper.GetComponent<ShapingCollider>();
-    }
 
     private void Start()
     {
@@ -34,8 +25,7 @@ public class Shaping : MonoBehaviour
         
         float button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
-        
-        _shapeCollider.shapeables.ForEach(s => s.Move(difference));
+        SceneManager.Instance.GetShapeables().Select(v => v.Shapeable).Distinct().ToList().ForEach(v => v.Move(difference));
     }
 
     private void OnEnable()

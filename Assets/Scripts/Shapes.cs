@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class Shapes : MonoBehaviour
 {
@@ -97,22 +94,30 @@ public class Shapes : MonoBehaviour
                 break;
             case ShapeType.Cube:
                 var proBuilderMesh = ShapeGenerator.GenerateCube(PivotLocation.Center, Vector3.one);
+                ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);   // Subdivide Object
+                // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
+                // Refresh the mesh to apply changes
+                proBuilderMesh.ToMesh();
+                proBuilderMesh.Refresh();
                 _shape = proBuilderMesh.gameObject;
                 var meshCollider = _shape.AddComponent<MeshCollider>();
                 meshCollider.sharedMesh = _shape.GetComponent<MeshFilter>().sharedMesh;
                 meshCollider.convex = true;
+
+                var shapeable = _shape.AddComponent<Shapeable>();
+                shapeable.Mesh = proBuilderMesh;
                 
                 var vertices = proBuilderMesh.GetVertices();
                 for(int i = 0; i < vertices.Length; i++)
                 {
                     var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     c.transform.parent = _shape.transform;
-                    c.transform.position = ((Vertex)vertices.GetValue(i)).position;
+                    c.transform.position = vertices[i].position;
                     c.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                    var shapeable = c.AddComponent<Shapeable>();
-                    shapeable.Index = i;
-                    shapeable.Mesh = proBuilderMesh;
-                    shapeable.SelectionPoint = c;
+                    var vidx = c.AddComponent<VertexIndex>();
+                    vidx.Index = i;
+                    vidx.SelectionPoint = c;
+                    vidx.Shapeable = shapeable;
                     c.GetComponent<Collider>().isTrigger = true;
                 }
                 _shape.name = "ProBuilderCube";

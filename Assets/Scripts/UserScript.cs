@@ -72,27 +72,23 @@ public class UserScript : MonoBehaviour
         _shapingAction = Input.Instance.User.Shaping;
         _shapingAction.Enable();
         _shapingAction.performed += ChangeShaping;
-        _shapingAction.canceled += ChangeFromShaping;
     }
     
     private void ChangeShaping(InputAction.CallbackContext ctx)
     {
         DisableMode();
-        if(_currentMode == Mode.Shaping)
+        if (_currentMode == Mode.Shaping)
+        {
             _currentMode = _prevMode;
+            _selection.isShaping = false;
+        }
         else
         {
             _prevMode = _currentMode;
             _currentMode = Mode.Shaping;
+            _selection.isShaping = true;
         }
         EnableMode();
-    }
-    
-    private void ChangeFromShaping(InputAction.CallbackContext ctx)
-    {
-        // DisableMode();
-        // _currentMode = _prevMode;
-        // EnableMode();
     }
 
     private void OnDisable()
@@ -169,7 +165,6 @@ public class UserScript : MonoBehaviour
     {
         if (alignmentObject.activeSelf)
         {
-            Debug.Log("Alignment Object");
             alignmentObject.transform.rotation = Quaternion.Euler(0,0,0);
         }
     }
