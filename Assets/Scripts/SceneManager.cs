@@ -5,7 +5,7 @@ public class SceneManager
 {
     private static SceneManager _instance;
     
-    private readonly HashSet<VertexIndex> _vertices = new();    // TODO: remove this and move to Shapeable
+    private readonly HashSet<Shapeable> _shapeables = new();
     private readonly HashSet<Selectable> _selectables = new();
     
     public static SceneManager Instance
@@ -17,19 +17,18 @@ public class SceneManager
     {
         return _selectables.ToList();
     }
-    public List<VertexIndex> GetShapeables()
+    public List<Shapeable> GetShapeables()
     {
-        return _vertices.ToList();
+        return _shapeables.ToList();
     }
 
     public void Add(Selectable selectable)
     {
         _selectables.Add(selectable);
     }
-    public void Add(VertexIndex vertex)
+    public void Add(Shapeable shapeable)
     {
-        vertex.Select();
-        _vertices.Add(vertex);
+        _shapeables.Add(shapeable);
     }
 
     public void ClearSelectables()
@@ -43,11 +42,11 @@ public class SceneManager
     }
     public void ClearShapeables()
     {
-        foreach (var vertexIndex in _vertices)
+        foreach (var shapeable in _shapeables)
         {
-            vertexIndex.Deselect();
+            shapeable.vertices.ToList().ForEach(vertex => vertex.Deselect());
         }
 
-        _vertices.Clear();
+        _shapeables.Clear();
     }
 }

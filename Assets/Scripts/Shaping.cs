@@ -25,7 +25,7 @@ public class Shaping : MonoBehaviour
         
         float button = _interactAction.ReadValue<float>();
         if (button == 0f) return;
-        SceneManager.Instance.GetShapeables().Select(v => v.Shapeable).Distinct().ToList().ForEach(v => v.Move(difference));
+        SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.Move(difference));
     }
 
     private void OnEnable()

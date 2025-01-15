@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,7 +13,7 @@ public class Selecting : MonoBehaviour
     public bool isShaping;
     private bool _inputEnabled = true;
     public bool alignPosition { private get; set; }
-    
+
     public Transform creationPoint;
     private GameObject _shape;
     private Vector3 _initPoint;
@@ -21,7 +22,7 @@ public class Selecting : MonoBehaviour
     private SelectionMode _mode = SelectionMode.Move;
     private Vector3 _prevPosition;
     private Quaternion _prevRotation;
-    
+
     public enum SelectionMode
     {
         Move,
@@ -38,18 +39,18 @@ public class Selecting : MonoBehaviour
         Right = 5,
         Bottom = 6
     }
-    
+
     private void OnEnable()
     {
         _selectAction = Input.Instance.User.Select;
         _selectAction.Enable();
         _selectAction.performed += InitCreateShape;
         _selectAction.canceled += FinishCreateShape;
-        
+
         _deselectAction = Input.Instance.User.Deselect;
         _deselectAction.Enable();
         _deselectAction.performed += ClearSelection;
-        
+
         _interactAction = Input.Instance.User.Interact;
         _interactAction.Enable();
         _interactAction.performed += InitSelectionManipulation;
@@ -61,7 +62,7 @@ public class Selecting : MonoBehaviour
         _deselectAction.Disable();
         _interactAction.Disable();
     }
-    
+
     public void DisableInputs()
     {
         _inputEnabled = false;
@@ -79,7 +80,7 @@ public class Selecting : MonoBehaviour
         SceneManager.Instance.ClearSelectables();
         SceneManager.Instance.ClearShapeables();
     }
-    
+
     private void FixedUpdate()
     {
         float selectionButton = _selectAction.ReadValue<float>();
@@ -110,6 +111,7 @@ public class Selecting : MonoBehaviour
                     break;
             }
         }
+
         _prevPosition = creationPoint.transform.position;
         _prevRotation = creationPoint.transform.rotation;
     }
@@ -119,16 +121,16 @@ public class Selecting : MonoBehaviour
         _prevPosition = creationPoint.transform.position;
         _prevRotation = creationPoint.transform.rotation;
     }
-    
+
     private void InitCreateShape(InputAction.CallbackContext ctx)
     {
         _shape = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        _collider =_shape.AddComponent<ColliderContainer>();
+        _collider = _shape.AddComponent<ColliderContainer>();
         Rigidbody rb = _shape.AddComponent<Rigidbody>();
         rb.isKinematic = true;
-        
+
         Material material = new(Shader.Find("Custom/TransparentShader"));
-        
+
         _shape.GetComponent<MeshRenderer>().material = material;
         _shape.transform.position = creationPoint.transform.position;
         _shape.transform.rotation = creationPoint.transform.rotation;
@@ -138,17 +140,19 @@ public class Selecting : MonoBehaviour
 
     private void FinishCreateShape(InputAction.CallbackContext ctx)
     {
-        foreach (var go in _collider.GetColliders())
+        if (isShaping)
         {
-            if (isShaping)
+            var vertices = _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList();
+            foreach (var shapeable in vertices.Select(vertex => vertex.Shapeable).Distinct())
             {
-                VertexIndex vertex = go.GetComponent<VertexIndex>();
-                if (vertex != null)
-                {
-                    SceneManager.Instance.Add(vertex);
-                }
+                SceneManager.Instance.Add(shapeable);
             }
-            else
+
+            vertices.ToList().ForEach(vertex => vertex.Select());
+        }
+        else
+        {
+            foreach (var go in _collider.GetColliders())
             {
                 Selectable selectable = go.GetComponent<Selectable>();
                 if (selectable != null)
@@ -172,17 +176,17 @@ public class Selecting : MonoBehaviour
         SceneManager.Instance.GetSelectables().ForEach(selectedObject => Destroy(selectedObject.gameObject));
         SceneManager.Instance.ClearSelectables();
     }
-    
+
     private void MoveSelection(Vector3 difference)
     {
         SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Move(difference));
     }
-    
+
     private void RotateSelection(Quaternion difference)
     {
         SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Rotate(difference));
     }
-    
+
     private void ScaleSelection(Vector3 difference)
     {
         SceneManager.Instance.GetSelectables().ForEach(selectedObject => selectedObject.Scale(difference));
@@ -192,7 +196,7 @@ public class Selecting : MonoBehaviour
     {
         if (alignPosition)
             AlignPosition(alignment);
-        else 
+        else
             AlignRotation(alignment);
     }
 
@@ -228,7 +232,7 @@ public class Selecting : MonoBehaviour
                 break;
         }
     }
-    
+
     public void AlignRotation(int alignment)
     {
         var list = SceneManager.Instance.GetSelectables();
@@ -254,17 +258,23 @@ public class Selecting : MonoBehaviour
                 break;
         }
     }
-    
-    private class ColliderContainer : MonoBehaviour {
+
+    private class ColliderContainer : MonoBehaviour
+    {
         private HashSet<GameObject> _colliders = new();
 
-        public HashSet<GameObject> GetColliders () { return _colliders; }
- 
-        private void OnTriggerEnter (Collider other) {
+        public HashSet<GameObject> GetColliders()
+        {
+            return _colliders;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
             _colliders.Add(other.gameObject);
         }
- 
-        private void OnTriggerExit (Collider other) {
+
+        private void OnTriggerExit(Collider other)
+        {
             _colliders.Remove(other.gameObject);
         }
     }

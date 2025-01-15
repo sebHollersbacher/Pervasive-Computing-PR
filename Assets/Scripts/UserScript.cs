@@ -14,7 +14,7 @@ public class UserScript : MonoBehaviour
     public GameObject selectionCanvas;
     public GameObject alignmentObject;
     
-    public Mode _currentMode = Mode.Shape;
+    private Mode _currentMode = Mode.Shape;
     private Mode _prevMode = Mode.Shape;
     private Drawing _drawing;
     private Erasing _erasing;

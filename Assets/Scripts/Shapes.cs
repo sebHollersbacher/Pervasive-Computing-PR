@@ -6,8 +6,8 @@ using UnityEngine.ProBuilder.MeshOperations;
 public class Shapes : MonoBehaviour
 {
     private InputAction _interactAction;
-    private bool _inputEnabled = false;
-    private bool _isCreating = false;
+    private bool _inputEnabled;
+    private bool _isCreating;
 
     public Transform creationPoint;
     private GameObject _shape;
@@ -44,14 +44,14 @@ public class Shapes : MonoBehaviour
 
     public void DisableInputs()
     {
-        _inputEnabled = false;
         _interactAction.Disable();
+        _inputEnabled = false;
     }
 
     public void EnableInputs()
     {
-        _interactAction.Enable();
         _inputEnabled = true;
+        _interactAction.Enable();
     }
 
     #endregion
@@ -80,6 +80,7 @@ public class Shapes : MonoBehaviour
 
     private void InitCreateShape(InputAction.CallbackContext ctx)
     {
+        if (!_inputEnabled) return;
         _isCreating = true;
 
         switch (SelectedShapeType)
@@ -114,13 +115,13 @@ public class Shapes : MonoBehaviour
                     c.transform.parent = _shape.transform;
                     c.transform.position = vertices[i].position;
                     c.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                    var vidx = c.AddComponent<VertexIndex>();
-                    vidx.Index = i;
-                    vidx.SelectionPoint = c;
-                    vidx.Shapeable = shapeable;
+                    var vertex = c.AddComponent<Vertex>();
+                    vertex.Index = i;
+                    vertex.SelectionPoint = c;
+                    vertex.Shapeable = shapeable;
                     c.GetComponent<Collider>().isTrigger = true;
                 }
-                _shape.name = "ProBuilderCube";
+                _shape.name = "BuilderCube";
                 break;
             case ShapeType.Sphere:
                 _shape = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -143,6 +144,7 @@ public class Shapes : MonoBehaviour
 
     private void FinishCreateShape(InputAction.CallbackContext ctx)
     {
+        if (!_inputEnabled) return;
         _shape.GetComponent<Collider>().isTrigger = true;
         _shape.AddComponent<Selectable>();
         _isCreating = false;

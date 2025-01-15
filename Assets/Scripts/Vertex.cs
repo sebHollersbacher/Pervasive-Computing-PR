@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class VertexIndex : MonoBehaviour
+public class Vertex : MonoBehaviour
 {
     public int Index { get; set; }
     public GameObject SelectionPoint { get; set; }
@@ -12,6 +12,8 @@ public class VertexIndex : MonoBehaviour
         Material material = new(Shader.Find("Standard"));
         material.color = Color.blue;
         SelectionPoint.GetComponent<Renderer>().material = material;
+
+        Shapeable.vertices.Add(this);
     }
 
     public void Deselect()
@@ -19,5 +21,7 @@ public class VertexIndex : MonoBehaviour
         Material material = new(Shader.Find("Standard"));
         material.color = Color.white;
         SelectionPoint.GetComponent<Renderer>().material = material;
+        
+        Shapeable.vertices.Remove(this);
     }
 }

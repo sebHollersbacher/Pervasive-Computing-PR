@@ -81,6 +81,7 @@ public class Drawing : MonoBehaviour
 
     private void InitDrawingMesh(InputAction.CallbackContext context)
     {
+        if(!_inputEnabled) return;
         _vertices.Clear();
         _triangles.Clear();
         _currentParent = new GameObject("Line");
@@ -97,6 +98,7 @@ public class Drawing : MonoBehaviour
     
     private void FinishDrawingMesh(InputAction.CallbackContext context)
     {
+        if (!_inputEnabled) return;
         _currentParent.AddComponent<Selectable>();
         var meshCollider = _currentParent.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = _mesh;

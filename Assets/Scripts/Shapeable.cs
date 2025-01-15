@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ProBuilder;
@@ -6,22 +7,23 @@ public class Shapeable : MonoBehaviour
 {
     public ProBuilderMesh Mesh { get; set; }
     
+    public HashSet<Vertex> vertices = new();
+    
     public void Move(Vector3 difference)
     {
-        var vertices = Mesh.GetVertices();
-        var selected = SceneManager.Instance.GetShapeables().ToArray();
-        var indices = selected.Select(v => v).ToDictionary(v => v.Index, v => v.SelectionPoint);
-        for (int i = 0; i < vertices.Length; i++)
+        var meshVertices = Mesh.GetVertices();
+        var indices = vertices.Select(v => v).ToDictionary(v => v.Index, v => v.SelectionPoint);
+        for (int i = 0; i < meshVertices.Length; i++)
         {
             if (indices.ContainsKey(i))
             {
                 var go = indices[i];
                 go.transform.position += difference;
-                vertices[i].position = go.transform.localPosition;
+                meshVertices[i].position = go.transform.localPosition;
             }
         }
         
-        Mesh.RebuildWithPositionsAndFaces(vertices.Select(v => v.position).ToArray(), Mesh.faces);
+        Mesh.RebuildWithPositionsAndFaces(meshVertices.Select(v => v.position).ToArray(), Mesh.faces);
         Mesh.Refresh();
     }
 }
