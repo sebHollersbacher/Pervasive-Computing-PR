@@ -41,6 +41,7 @@ public class Shaping : MonoBehaviour
     
     public void DisableInputs()
     {
+        SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.SetActive(false));
         shaper.SetActive(false);
         isActive = false;
         _interactAction.Disable();
@@ -48,6 +49,7 @@ public class Shaping : MonoBehaviour
 
     public void EnableInputs()
     {
+        SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.SetActive(true));
         shaper.SetActive(true);
         isActive = true;
         _interactAction.Enable();

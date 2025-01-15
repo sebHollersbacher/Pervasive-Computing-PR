@@ -142,13 +142,7 @@ public class Selecting : MonoBehaviour
     {
         if (isShaping)
         {
-            var vertices = _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList();
-            foreach (var shapeable in vertices.Select(vertex => vertex.Shapeable).Distinct())
-            {
-                SceneManager.Instance.Add(shapeable);
-            }
-
-            vertices.ToList().ForEach(vertex => vertex.Select());
+            _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList().ForEach(vertex => vertex.Select());
         }
         else
         {
@@ -173,8 +167,13 @@ public class Selecting : MonoBehaviour
 
     public void DeleteSelection()
     {
-        SceneManager.Instance.GetSelectables().ForEach(selectedObject => Destroy(selectedObject.gameObject));
+        SceneManager.Instance.GetSelectables().ForEach(selectedObject =>
+        {
+            SceneManager.Instance.Remove(selectedObject.GetComponent<Shapeable>());
+            Destroy(selectedObject.gameObject);
+        });
         SceneManager.Instance.ClearSelectables();
+        SceneManager.Instance.ClearShapeables();
     }
 
     private void MoveSelection(Vector3 difference)

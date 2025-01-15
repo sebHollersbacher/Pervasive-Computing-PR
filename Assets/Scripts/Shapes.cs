@@ -97,9 +97,9 @@ public class Shapes : MonoBehaviour
                 var proBuilderMesh = ShapeGenerator.GenerateCube(PivotLocation.Center, Vector3.one);
                 ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);   // Subdivide Object
                 // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
-                // Refresh the mesh to apply changes
                 proBuilderMesh.ToMesh();
                 proBuilderMesh.Refresh();
+                
                 _shape = proBuilderMesh.gameObject;
                 var meshCollider = _shape.AddComponent<MeshCollider>();
                 meshCollider.sharedMesh = _shape.GetComponent<MeshFilter>().sharedMesh;
@@ -107,20 +107,22 @@ public class Shapes : MonoBehaviour
 
                 var shapeable = _shape.AddComponent<Shapeable>();
                 shapeable.Mesh = proBuilderMesh;
+                Material vertexMaterial = new(Shader.Find("Custom/TransparentShader"));
+                // vertexMaterial.color = new Color(0, 0, 0, .3f);
                 
                 var vertices = proBuilderMesh.GetVertices();
                 for(int i = 0; i < vertices.Length; i++)
                 {
-                    var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    var c = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    c.GetComponent<Renderer>().material = vertexMaterial;
                     c.transform.parent = _shape.transform;
                     c.transform.position = vertices[i].position;
                     c.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                    var vertex = c.AddComponent<Vertex>();
-                    vertex.Index = i;
-                    vertex.SelectionPoint = c;
-                    vertex.Shapeable = shapeable;
+                    Vertex.CreateVertex(c,i,shapeable);
                     c.GetComponent<Collider>().isTrigger = true;
                 }
+                
+                shapeable.SetActive(false);
                 _shape.name = "BuilderCube";
                 break;
             case ShapeType.Sphere:

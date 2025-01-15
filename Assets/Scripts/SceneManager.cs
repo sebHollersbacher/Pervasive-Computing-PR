@@ -30,6 +30,11 @@ public class SceneManager
     {
         _shapeables.Add(shapeable);
     }
+    
+    public void Remove(Shapeable shapeable)
+    {
+        _shapeables.Remove(shapeable);
+    }
 
     public void ClearSelectables()
     {
@@ -46,7 +51,5 @@ public class SceneManager
         {
             shapeable.vertices.ToList().ForEach(vertex => vertex.Deselect());
         }
-
-        _shapeables.Clear();
     }
 }
