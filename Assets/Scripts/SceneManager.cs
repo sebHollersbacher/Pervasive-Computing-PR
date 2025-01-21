@@ -49,7 +49,7 @@ public class SceneManager
     {
         foreach (var shapeable in _shapeables)
         {
-            shapeable.vertices.ToList().ForEach(vertex => vertex.Deselect());
+            shapeable.SelectedVertices.ToList().ForEach(vertex => vertex.Deselect());
         }
     }
 }

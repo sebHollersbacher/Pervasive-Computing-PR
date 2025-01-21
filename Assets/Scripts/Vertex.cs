@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class Vertex : MonoBehaviour
         instance.SelectionPoint = selectionPoint;
         instance.Index = index;
         instance.Shapeable = shapeable;
+        shapeable.Vertices.Add(instance);
     }
     
     public int Index { get; set; }
@@ -36,30 +38,20 @@ public class Vertex : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        _shapeable.SetActiveEvent -= SelectionPoint.SetActive;
+    }
+
     public void Select()
     {
         SelectionPoint.GetComponent<Renderer>().material.color = new Color(1,1,0,.4f);;
-
-        // List<int> arrayList = new List<int>();
-        // arrayList.AddRange(Shapeable.Mesh.selectedVertices);
-        // arrayList.Add(Index);
-        // Shapeable.Mesh.SetSelectedVertices(arrayList);
-        // if (arrayList.Count >= 2)
-        // {
-            // int[] newint = ConnectElements.Connect(Shapeable.Mesh, Shapeable.Mesh.selectedVertices);
-            // Shapeable.Mesh.edge
-        // }
-        Shapeable.vertices.Add(this);
+        Shapeable.SelectedVertices.Add(this);
     }
 
     public void Deselect()
     {
         SelectionPoint.GetComponent<Renderer>().material.color = new Color(0,0,1,.4f);
-        
-        // List<int> arrayList = new List<int>();
-        // arrayList.AddRange(Shapeable.Mesh.selectedVertices);
-        // arrayList.Remove(Index);
-        // Shapeable.Mesh.SetSelectedVertices(arrayList);
-        Shapeable.vertices.Remove(this);
+        Shapeable.SelectedVertices.Remove(this);
     }
 }
