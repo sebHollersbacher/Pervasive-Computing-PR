@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class Selecting : MonoBehaviour
 {
@@ -143,6 +145,15 @@ public class Selecting : MonoBehaviour
         if (isShaping)
         {
             _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList().ForEach(vertex => vertex.Select());
+            SceneManager.Instance.GetShapeables().ForEach(shapeable =>
+            {
+                var indasx = shapeable.vertices.Select(v => v.Index).ToList();
+                var indsas = ConnectElements.Connect(shapeable.Mesh, indasx);
+                shapeable.Mesh.Refresh();
+                Debug.Log("Old: " + String.Join("; ", indasx));
+                Debug.Log("New: " + String.Join("; ", indsas));
+                // TODO: recalc all vertics
+            });
         }
         else
         {
