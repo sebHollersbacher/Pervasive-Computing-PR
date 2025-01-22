@@ -145,7 +145,6 @@ public class Selecting : MonoBehaviour
         if (isShaping)
         {
             _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList().ForEach(vertex => vertex.Select());
-            SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.CreateEdges());
         }
         else
         {

@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class Shaping : MonoBehaviour
 {
     private InputAction _interactAction;
+    private InputAction _createAction;
     
     public GameObject shaper;
     
@@ -28,15 +29,26 @@ public class Shaping : MonoBehaviour
         SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.Move(difference));
     }
 
+    private void CreateVertices(InputAction.CallbackContext obj)
+    {
+        SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.CreateEdges());
+    }
+
     private void OnEnable()
     {
         _interactAction = Input.Instance.User.Interact;
         _interactAction.Enable();
+        _createAction = Input.Instance.User.Create;
+        _createAction.Enable();
+        _createAction.performed += CreateVertices;
     }
+
+    
 
     private void OnDisable()
     {
         _interactAction.Disable();
+        _createAction.Disable();
     }
     
     public void DisableInputs()
@@ -45,6 +57,7 @@ public class Shaping : MonoBehaviour
         shaper.SetActive(false);
         isActive = false;
         _interactAction.Disable();
+        _createAction.Disable();
     }
 
     public void EnableInputs()
@@ -53,5 +66,6 @@ public class Shaping : MonoBehaviour
         shaper.SetActive(true);
         isActive = true;
         _interactAction.Enable();
+        _createAction.Enable();
     }
 }

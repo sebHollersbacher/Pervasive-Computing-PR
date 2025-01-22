@@ -82,6 +82,15 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Create"",
+                    ""type"": ""Button"",
+                    ""id"": ""d28ea6a9-373c-48d7-acd6-1069ab127f56"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""7152a482-c7da-469a-884c-05184a7ce3a8"",
@@ -206,6 +215,28 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
                     ""action"": ""Deselect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""779d5fe7-9345-4b4e-89ac-48496fc18d0f"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Create"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f181db44-878d-4f6b-b469-1b8ed316d616"",
+                    ""path"": ""<OculusTouchController>{LeftHand}/triggerPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;XR"",
+                    ""action"": ""Create"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -920,6 +951,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         m_User_Select = m_User.FindAction("Select", throwIfNotFound: true);
         m_User_Shaping = m_User.FindAction("Shaping", throwIfNotFound: true);
         m_User_Deselect = m_User.FindAction("Deselect", throwIfNotFound: true);
+        m_User_Create = m_User.FindAction("Create", throwIfNotFound: true);
         m_User_Menu = m_User.FindAction("Menu", throwIfNotFound: true);
         m_User_ShapeMenu = m_User.FindAction("Shape Menu", throwIfNotFound: true);
         m_User_SelectionMenu = m_User.FindAction("Selection Menu", throwIfNotFound: true);
@@ -1008,6 +1040,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_User_Select;
     private readonly InputAction m_User_Shaping;
     private readonly InputAction m_User_Deselect;
+    private readonly InputAction m_User_Create;
     private readonly InputAction m_User_Menu;
     private readonly InputAction m_User_ShapeMenu;
     private readonly InputAction m_User_SelectionMenu;
@@ -1021,6 +1054,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         public InputAction @Select => m_Wrapper.m_User_Select;
         public InputAction @Shaping => m_Wrapper.m_User_Shaping;
         public InputAction @Deselect => m_Wrapper.m_User_Deselect;
+        public InputAction @Create => m_Wrapper.m_User_Create;
         public InputAction @Menu => m_Wrapper.m_User_Menu;
         public InputAction @ShapeMenu => m_Wrapper.m_User_ShapeMenu;
         public InputAction @SelectionMenu => m_Wrapper.m_User_SelectionMenu;
@@ -1051,6 +1085,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Deselect.started += instance.OnDeselect;
             @Deselect.performed += instance.OnDeselect;
             @Deselect.canceled += instance.OnDeselect;
+            @Create.started += instance.OnCreate;
+            @Create.performed += instance.OnCreate;
+            @Create.canceled += instance.OnCreate;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
@@ -1082,6 +1119,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Deselect.started -= instance.OnDeselect;
             @Deselect.performed -= instance.OnDeselect;
             @Deselect.canceled -= instance.OnDeselect;
+            @Create.started -= instance.OnCreate;
+            @Create.performed -= instance.OnCreate;
+            @Create.canceled -= instance.OnCreate;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
@@ -1279,6 +1319,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnShaping(InputAction.CallbackContext context);
         void OnDeselect(InputAction.CallbackContext context);
+        void OnCreate(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnShapeMenu(InputAction.CallbackContext context);
         void OnSelectionMenu(InputAction.CallbackContext context);

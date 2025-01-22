@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Create",
+                    "type": "Button",
+                    "id": "d28ea6a9-373c-48d7-acd6-1069ab127f56",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Menu",
                     "type": "Button",
                     "id": "7152a482-c7da-469a-884c-05184a7ce3a8",
@@ -184,6 +193,28 @@
                     "processors": "",
                     "groups": "Gamepad;XR",
                     "action": "Deselect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "779d5fe7-9345-4b4e-89ac-48496fc18d0f",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Create",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f181db44-878d-4f6b-b469-1b8ed316d616",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;XR",
+                    "action": "Create",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
