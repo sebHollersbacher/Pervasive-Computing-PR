@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder;
@@ -95,7 +96,7 @@ public class Shapes : MonoBehaviour
                 break;
             case ShapeType.Cube:
                 var proBuilderMesh = ShapeGenerator.GenerateCube(PivotLocation.Center, Vector3.one);
-                ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);   // Subdivide Object
+                // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);   // Subdivide Object
                 // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
                 proBuilderMesh.ToMesh();
                 proBuilderMesh.Refresh();
@@ -108,7 +109,6 @@ public class Shapes : MonoBehaviour
                 var shapeable = _shape.AddComponent<Shapeable>();
                 shapeable.Mesh = proBuilderMesh;
                 Material vertexMaterial = new(Shader.Find("Custom/TransparentShader"));
-                // vertexMaterial.color = new Color(0, 0, 0, .3f);
                 
                 var vertices = proBuilderMesh.GetVertices();
                 for(int i = 0; i < vertices.Length; i++)
@@ -121,6 +121,18 @@ public class Shapes : MonoBehaviour
                     Vertex.CreateVertex(c,i,shapeable);
                     c.GetComponent<Collider>().isTrigger = true;
                 }
+
+                proBuilderMesh.faces.SelectMany(face => face.edges.Select(edge => edge)).ToList().ForEach(edge =>
+                {
+                    var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    c.GetComponent<Renderer>().material = vertexMaterial;
+                    c.transform.parent = _shape.transform;
+                    c.transform.position = (proBuilderMesh.positions[edge.a] + proBuilderMesh.positions[edge.b])/2f;
+                    c.transform.localScale = new Vector3(0.05f, 0.05f, 1f);
+                    c.transform.localRotation = Quaternion.LookRotation(proBuilderMesh.positions[edge.b] - proBuilderMesh.positions[edge.a]);
+                    Edge.CreateEdge(c,edge,shapeable);
+                    c.GetComponent<Collider>().isTrigger = true;
+                });
                 
                 shapeable.SetActive(false);
                 _shape.name = "BuilderCube";

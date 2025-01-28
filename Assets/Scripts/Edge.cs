@@ -1,22 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.ProBuilder.MeshOperations;
 
-public class Vertex : MonoBehaviour
+public class Edge : MonoBehaviour
 {
-    public static void CreateVertex(GameObject selectionPoint, int index, Shapeable shapeable)
+    public static void CreateEdge(GameObject selectionPoint, UnityEngine.ProBuilder.Edge edge, Shapeable shapeable)
     {
-        var instance = selectionPoint.AddComponent<Vertex>();
+        var instance = selectionPoint.AddComponent<Edge>();
         instance.SelectionPoint = selectionPoint;
-        instance.Index = index;
+        instance.edge = edge;
         instance.Shapeable = shapeable;
-        shapeable.Vertices.Add(instance);
+        shapeable.Edges.Add(instance);
     }
     
-    public int Index { get; set; }
+    public UnityEngine.ProBuilder.Edge edge { get; set; }
     public GameObject SelectionPoint { get; set; }
 
     private Shapeable _shapeable;
@@ -46,14 +42,14 @@ public class Vertex : MonoBehaviour
 
     public void Select()
     {
-        SelectionPoint.GetComponent<Renderer>().material.color = new Color(1,1,0,.4f);;
-        Shapeable.SelectedVertices.Add(this);
-        Shapeable.SelectedEdges.ToList().ForEach(edge => edge.Deselect());
+        SelectionPoint.GetComponent<Renderer>().material.color = new Color(1,1,0,.4f);
+        Shapeable.SelectedEdges.Add(this);
+        Shapeable.SelectedVertices.ToList().ForEach(vertex => vertex.Deselect());
     }
 
     public void Deselect()
     {
         SelectionPoint.GetComponent<Renderer>().material.color = new Color(0,0,1,.4f);
-        Shapeable.SelectedVertices.Remove(this);
+        Shapeable.SelectedEdges.Remove(this);
     }
 }

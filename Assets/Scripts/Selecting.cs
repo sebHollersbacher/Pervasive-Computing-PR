@@ -145,6 +145,7 @@ public class Selecting : MonoBehaviour
         if (isShaping)
         {
             _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList().ForEach(vertex => vertex.Select());
+            _collider.GetColliders().Select(go => go.GetComponent<Edge>()).NotNull().ToList().ForEach(edge => edge.Select());
         }
         else
         {

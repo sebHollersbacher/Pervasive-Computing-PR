@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder;
 using UnityEngine.ProBuilder.MeshOperations;
@@ -11,6 +9,9 @@ public class Shapeable : MonoBehaviour
     public delegate void ActiveDelegate(bool active);
     public event ActiveDelegate SetActiveEvent;
     public ProBuilderMesh Mesh { get; set; }
+    
+    public HashSet<Edge> Edges = new();
+    public HashSet<Edge> SelectedEdges = new();
     
     public HashSet<Vertex> Vertices = new();
     public HashSet<Vertex> SelectedVertices = new();
@@ -28,16 +29,21 @@ public class Shapeable : MonoBehaviour
     public void Move(Vector3 difference)
     {
         var meshVertices = Mesh.GetVertices();
-        var indices = SelectedVertices.Select(v => v).ToDictionary(v => v.Index, v => v.SelectionPoint);
+        var indices = SelectedVertices.Select(v => v.Index).ToList();
+        SelectedEdges.ToList().ForEach(edge =>
+        {
+            edge.Shapeable.Mesh.GetCoincidentVertices(new List<int> {edge.edge.a, edge.edge.a}).ForEach(index => indices.Add(index));
+        });
         for (int i = 0; i < meshVertices.Length; i++)
         {
-            if (indices.ContainsKey(i))
+            if (indices.Contains(i))
             {
-                var go = indices[i];
-                go.transform.position += difference;
-                meshVertices[i].position = go.transform.localPosition;
+                meshVertices[i].position += gameObject.transform.InverseTransformVector(difference);
             }
         }
+        
+        SelectedVertices.Select(v => v.SelectionPoint).ToList().ForEach(go => go.transform.position += difference);
+        SelectedEdges.Select(v => v.SelectionPoint).ToList().ForEach(go => go.transform.position += difference);
         
         Mesh.RebuildWithPositionsAndFaces(meshVertices.Select(v => v.position).ToArray(), Mesh.faces);
         Mesh.Refresh();

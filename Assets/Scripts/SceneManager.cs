@@ -50,6 +50,7 @@ public class SceneManager
         foreach (var shapeable in _shapeables)
         {
             shapeable.SelectedVertices.ToList().ForEach(vertex => vertex.Deselect());
+            shapeable.SelectedEdges.ToList().ForEach(edge => edge.Deselect());
         }
     }
 }
