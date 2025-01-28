@@ -8,6 +8,7 @@ public class Shaping : MonoBehaviour
     private InputAction _createAction;
     
     public GameObject shaper;
+    private ColliderContainer _collider;
     
     private bool isActive;
     
@@ -16,6 +17,9 @@ public class Shaping : MonoBehaviour
     private void Start()
     {
         startPosition = shaper.transform.position;
+        _collider = shaper.AddComponent<ColliderContainer>();
+        Rigidbody rb = shaper.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
     }
 
     private void FixedUpdate()
@@ -31,7 +35,16 @@ public class Shaping : MonoBehaviour
 
     private void CreateVertices(InputAction.CallbackContext obj)
     {
-        SceneManager.Instance.GetShapeables().ForEach(shapeable => shapeable.CreateEdges());
+        SceneManager.Instance.GetShapeables().ForEach(shapeable =>
+        {
+            if(shapeable.SelectedVertices.Count > 0)
+                shapeable.CreateEdges();
+        });
+        SceneManager.Instance.GetShapeables().ForEach(shapeable =>
+        {
+            if(shapeable.SelectedEdges.Count > 0)
+                shapeable.CreateVertices();
+        });
     }
 
     private void OnEnable()
@@ -67,5 +80,20 @@ public class Shaping : MonoBehaviour
         isActive = true;
         _interactAction.Enable();
         _createAction.Enable();
+    }
+    
+    private class ColliderContainer : MonoBehaviour
+    {
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject != null)
+            {
+                var vertex = other.gameObject.GetComponent<Vertex>();
+                if (vertex != null) vertex.Select();
+                
+                var edge = other.gameObject.GetComponent<Edge>();
+                if (edge != null) edge.Select();
+            }
+        }
     }
 }
