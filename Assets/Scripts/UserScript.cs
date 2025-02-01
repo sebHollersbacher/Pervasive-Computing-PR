@@ -112,12 +112,15 @@ public class UserScript : MonoBehaviour
         {
             // Adjust height of camera
             var localPos = _cameraRig.transform.localPosition;
-            localPos.y = OVRManager.profile.eyeHeight - 1;
+            localPos.y = OVRManager.profile.eyeHeight - .5f;
             _cameraRig.transform.localPosition = localPos;
         }
         else
         {
             rightController.Translate(0.2f, 0, .4f);
+            var localPos = _cameraRig.transform.localPosition;
+            localPos.y += 1;
+            _cameraRig.transform.localPosition = localPos;
             _debug = true;
         }
 
