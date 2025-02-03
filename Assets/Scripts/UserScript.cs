@@ -43,6 +43,10 @@ public class UserScript : MonoBehaviour
     private float _rotationX;
     private float _rotationY;
 
+    private GameObject x_line;
+    private GameObject y_line;
+    private GameObject z_line;
+
     // General
     private OVRCameraRig _cameraRig;
 
@@ -134,6 +138,27 @@ public class UserScript : MonoBehaviour
         alignmentObject.SetActive(false);
         rayInteractor.SetActive(false);
         
+        Material material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(1f, 0f, 0f, .2f);
+        x_line = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        x_line.GetComponent<MeshRenderer>().material = material;
+        x_line.transform.position = rightController.position;
+        x_line.transform.localScale = new Vector3(.1f, .1f, .1f);
+        
+        material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(0f, 1f, 0f, .2f);
+        y_line = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        y_line.GetComponent<MeshRenderer>().material = material;
+        y_line.transform.position = rightController.position;
+        y_line.transform.localScale = new Vector3(.1f, .1f, .1f);
+            
+        material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(0f, 0f, 1f, .2f);
+        z_line = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        z_line.GetComponent<MeshRenderer>().material = material;
+        z_line.transform.position = rightController.position;
+        z_line.transform.localScale = new Vector3(.1f, .1f, .1f);
+        
         DisableMode();
         EnableMode();
     }
@@ -162,6 +187,18 @@ public class UserScript : MonoBehaviour
         }
 
         #endregion
+        
+        Vector3 pos = rightController.position;
+        pos.x -= 0.3f;
+        x_line.transform.position = pos;
+        
+        pos = rightController.position;
+        pos.y -= 0.3f;
+        y_line.transform.position = pos;
+        
+        pos = rightController.position;
+        pos.z -= 0.3f;
+        z_line.transform.position = pos;
     }
     
     private void FixedUpdate()
