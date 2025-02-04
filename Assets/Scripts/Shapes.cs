@@ -97,8 +97,7 @@ public class Shapes : MonoBehaviour
                 break;
             case ShapeType.Cube:
                 var proBuilderMesh = ShapeGenerator.GenerateCube(PivotLocation.Center, Vector3.one);
-                // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);   // Subdivide Object
-                // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
+                ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
                 proBuilderMesh.ToMesh();
                 proBuilderMesh.Refresh();
 

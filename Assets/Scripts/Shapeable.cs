@@ -84,10 +84,7 @@ public class Shapeable : MonoBehaviour
 
     public void CreateVertices()
     {
-        SelectedEdges.ToList().ForEach(edge =>
-        {
-            var newEdges = Mesh.AppendVerticesToEdge(edge.edge, 1);
-        });
+        Mesh.AppendVerticesToEdge(SelectedEdges.Select(edge => edge.edge).ToList(), 1);
         
         RefreshEdges();
     }
