@@ -7,8 +7,16 @@ using UnityEngine.ProBuilder.MeshOperations;
 
 public class Vertex : MonoBehaviour
 {
-    public static void CreateVertex(GameObject selectionPoint, int index, Shapeable shapeable)
+    private static readonly Material VertexMaterial = new(Shader.Find("Custom/TransparentShader"));
+    public static void CreateVertex(int index, Vector3 position, Shapeable shapeable)
     {
+        var selectionPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        selectionPoint.GetComponent<Renderer>().material = VertexMaterial;
+        selectionPoint.GetComponent<Collider>().isTrigger = true;
+        selectionPoint.transform.parent = shapeable.gameObject.transform;
+        selectionPoint.transform.localPosition = position;
+        selectionPoint.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+        
         var instance = selectionPoint.AddComponent<Vertex>();
         instance.SelectionPoint = selectionPoint;
         instance.Index = index;
@@ -42,6 +50,11 @@ public class Vertex : MonoBehaviour
     private void OnDestroy()
     {
         _shapeable.SetActiveEvent -= SelectionPoint.SetActive;
+    }
+
+    public void UpdateVisual()
+    {
+        SelectionPoint.transform.localPosition = Shapeable.Mesh.positions[Index];
     }
 
     public void Select()

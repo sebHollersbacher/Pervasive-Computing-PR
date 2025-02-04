@@ -72,9 +72,10 @@ public class Shapes : MonoBehaviour
         {
             _shape.transform.localScale = new Vector3(0.001f, size, size);
         }
+
         if (SelectedShapeType == ShapeType.Line)
         {
-            _shape.transform.localScale = new Vector3(2*Radius, size/2, 2*Radius);
+            _shape.transform.localScale = new Vector3(2 * Radius, size / 2, 2 * Radius);
             _shape.transform.position = (_initPoint + creationPoint.transform.position) * 0.5f;
         }
     }
@@ -100,7 +101,7 @@ public class Shapes : MonoBehaviour
                 // ConnectElements.Connect(proBuilderMesh,proBuilderMesh.faces);
                 proBuilderMesh.ToMesh();
                 proBuilderMesh.Refresh();
-                
+
                 _shape = proBuilderMesh.gameObject;
                 var meshCollider = _shape.AddComponent<MeshCollider>();
                 meshCollider.sharedMesh = _shape.GetComponent<MeshFilter>().sharedMesh;
@@ -108,32 +109,11 @@ public class Shapes : MonoBehaviour
 
                 var shapeable = _shape.AddComponent<Shapeable>();
                 shapeable.Mesh = proBuilderMesh;
-                Material vertexMaterial = new(Shader.Find("Custom/TransparentShader"));
-                
-                var vertices = proBuilderMesh.GetVertices();
-                for(int i = 0; i < vertices.Length; i++)
-                {
-                    var c = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    c.GetComponent<Renderer>().material = vertexMaterial;
-                    c.transform.parent = _shape.transform;
-                    c.transform.position = vertices[i].position;
-                    c.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                    Vertex.CreateVertex(c,i,shapeable);
-                    c.GetComponent<Collider>().isTrigger = true;
-                }
-
                 proBuilderMesh.faces.SelectMany(face => face.edges.Select(edge => edge)).ToList().ForEach(edge =>
                 {
-                    var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    c.GetComponent<Renderer>().material = vertexMaterial;
-                    c.transform.parent = _shape.transform;
-                    c.transform.position = (proBuilderMesh.positions[edge.a] + proBuilderMesh.positions[edge.b])/2f;
-                    c.transform.localScale = new Vector3(0.05f, 0.05f, 1f);
-                    c.transform.localRotation = Quaternion.LookRotation(proBuilderMesh.positions[edge.b] - proBuilderMesh.positions[edge.a]);
-                    Edge.CreateEdge(c,edge,shapeable);
-                    c.GetComponent<Collider>().isTrigger = true;
+                    Edge.CreateEdge(edge, shapeable);
                 });
-                
+
                 shapeable.SetActive(false);
                 _shape.name = "BuilderCube";
                 break;
@@ -163,7 +143,7 @@ public class Shapes : MonoBehaviour
         _shape.AddComponent<Selectable>();
         _isCreating = false;
     }
-    
+
     private GameObject CreatePyramid()
     {
         GameObject pyramid = new("Pyramid");
@@ -197,7 +177,7 @@ public class Shapes : MonoBehaviour
         var meshCollider = pyramid.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
         meshCollider.convex = true;
-        
+
         return pyramid;
     }
 }
