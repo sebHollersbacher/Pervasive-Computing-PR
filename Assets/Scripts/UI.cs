@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class UI : MonoBehaviour
 {
     private UserScript _userScript;
-    
     public Drawing drawingScript;
     public Erasing erasingScript;
     public Shapes shapeScript;
@@ -35,6 +34,11 @@ public class UI : MonoBehaviour
     private Button _alignPosButton;
     private Button _alignRotButton;
 
+    public Transform coordinateSystemTransform;
+    private GameObject _xLine;
+    private GameObject _yLine;
+    private GameObject _zLine;
+
     private void Start()
     {
         _userScript = GetComponentInChildren<UserScript>();
@@ -46,6 +50,39 @@ public class UI : MonoBehaviour
         AssignButtons(buttons);
         
         DisableAll();
+        
+        Material material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(1f, 0f, 0f, .2f);
+        _xLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _xLine.GetComponent<MeshRenderer>().material = material;
+        
+        material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(0f, 1f, 0f, .2f);
+        _yLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _yLine.GetComponent<MeshRenderer>().material = material;
+            
+        material = new(Shader.Find("Custom/TransparentShader"));
+        material.color = new Color(0f, 0f, 1f, .2f);
+        _zLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _zLine.GetComponent<MeshRenderer>().material = material;
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 refPoint = coordinateSystemTransform.position;
+        refPoint.x = refPoint.x/2 - 1.5f;
+        _xLine.transform.position = refPoint;
+        _xLine.transform.localScale = new Vector3((refPoint.x+3)*2, .01f, .01f);
+        
+        refPoint = coordinateSystemTransform.position;
+        refPoint.y = refPoint.y/2 - 1.5f;
+        _yLine.transform.position = refPoint;
+        _yLine.transform.localScale = new Vector3(.01f, (refPoint.y+3)*2, .01f);
+        
+        refPoint = coordinateSystemTransform.position;
+        refPoint.z = refPoint.z/2 - 1.5f;
+        _zLine.transform.position = refPoint;
+        _zLine.transform.localScale = new Vector3(.01f, .01f, (refPoint.z+3)*2);
     }
 
     public void DrawingButton()
