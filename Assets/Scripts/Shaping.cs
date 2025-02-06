@@ -82,6 +82,11 @@ public class Shaping : MonoBehaviour
         _createAction.Enable();
     }
     
+    public void ChangeRadius(float radius)
+    {
+        shaper.transform.localScale = new Vector3(2*radius, 2*radius, 2*radius);
+    }
+    
     private class ColliderContainer : MonoBehaviour
     {
         private void OnTriggerEnter(Collider other)

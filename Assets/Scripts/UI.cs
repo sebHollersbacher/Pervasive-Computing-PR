@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UI : MonoBehaviour
@@ -12,63 +10,48 @@ public class UI : MonoBehaviour
     public Erasing erasingScript;
     public Shapes shapeScript;
     public Selecting selectScript;
+    public Shaping shapingScript;
     
     public GameObject drawingCanvas;
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
     
-    private Button _drawingButton;
-    private Button _eraseButton;
-    
-    private Button _lineButton;
-    private Button _planeButton;
-    private Button _cubeButton;
-    private Button _sphereButton;
-    private Button _cylinderButton;
-    private Button _pyramidButton;
-    
-    private Button _deleteButton;
-    private Button _moveButton;
-    private Button _rotateButton;
-    private Button _scaleButton;
-    private Button _alignPosButton;
-    private Button _alignRotButton;
+    private Button _selectedButton;
 
     public Transform coordinateSystemTransform;
     private GameObject _xLine;
     private GameObject _yLine;
     private GameObject _zLine;
-
+    private bool _showLines;
+    
     private void Start()
     {
         _userScript = GetComponentInChildren<UserScript>();
-        var buttons = drawingCanvas.GetComponentsInChildren<Button>();
-        AssignButtons(buttons);
-        buttons = shapeCanvas.GetComponentsInChildren<Button>();
-        AssignButtons(buttons);
-        buttons = selectionCanvas.GetComponentsInChildren<Button>();
-        AssignButtons(buttons);
-        
-        DisableAll();
+        ChangeSelectedButton(drawingCanvas.GetComponentsInChildren<Button>().Select(button => button).First(button => button.name == "DrawingButton"));
         
         Material material = new(Shader.Find("Custom/TransparentShader"));
         material.color = new Color(1f, 0f, 0f, .2f);
         _xLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _xLine.GetComponent<MeshRenderer>().material = material;
+        _xLine.transform.localScale = Vector3.zero;
         
         material = new(Shader.Find("Custom/TransparentShader"));
         material.color = new Color(0f, 1f, 0f, .2f);
         _yLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _yLine.GetComponent<MeshRenderer>().material = material;
+        _yLine.transform.localScale = Vector3.zero;
             
         material = new(Shader.Find("Custom/TransparentShader"));
         material.color = new Color(0f, 0f, 1f, .2f);
         _zLine = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _zLine.GetComponent<MeshRenderer>().material = material;
+        _zLine.transform.localScale = Vector3.zero;
     }
 
     private void FixedUpdate()
     {
+        if (!_showLines) return;
+        
         Vector3 refPoint = coordinateSystemTransform.position;
         refPoint.x = refPoint.x/2 - 1.5f;
         _xLine.transform.position = refPoint;
@@ -85,40 +68,78 @@ public class UI : MonoBehaviour
         _zLine.transform.localScale = new Vector3(.01f, .01f, (refPoint.z+3)*2);
     }
 
-    public void DrawingButton()
+    public void ChangeMode(Button button)
     {
-        DisableAll();
-        _drawingButton.interactable = false;
-        _userScript.ChangeMode(UserScript.Mode.Drawing);
+        switch (button.name)
+        {
+            case "DrawingButton":
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Drawing;
+                break;
+            case "ErasingButton":
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Erasing;
+                break;
+            case "ShapesButton":
+                _userScript.OpenShapeMenu();
+                break;
+            case "SelectionButton":
+                _userScript.OpenSelectionMenu();
+                break;
+            case "ManipulationButton":
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Shaping;
+                break;
+        }
     }
 
-    public void ErasingButton()
+    public void ChangeSelectedButton(Button newButton)
     {
-        DisableAll();
-        _eraseButton.interactable = false;
-        _userScript.ChangeMode(UserScript.Mode.Erasing);
+        if (_selectedButton != null)
+        {
+            _selectedButton.interactable = true;
+        }
+        
+        _selectedButton = newButton;
+        
+        if (_selectedButton != null)
+        {
+            _selectedButton.interactable = false;
+        }
+    }
+
+    public void ToggleCoordinateMarkers(Button button)
+    {
+        _showLines = !_showLines;
+        if (!_showLines)
+        {
+            _xLine.transform.localScale = Vector3.zero;
+            _yLine.transform.localScale = Vector3.zero;
+            _zLine.transform.localScale = Vector3.zero;
+        }
+        button.targetGraphic.color = _showLines ? new Color(0f, .7f, 1f, 1f) : Color.white;
     }
     
     public void HandleSelectionButton(Button button)
     {
-        DisableAll();
-
         switch (button.name)
         {
-            case "DeleteButton": selectScript.DeleteSelection(); break;
+            case "DeleteButton": 
+                selectScript.DeleteSelection(); 
+                break;
             case "MoveButton":
-                button.interactable = false;
-                _userScript.ChangeMode(UserScript.Mode.Selection);
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Selection;
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Move);
                 break;
             case "RotateButton": 
-                button.interactable = false;
-                _userScript.ChangeMode(UserScript.Mode.Selection);
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Selection;
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Rotate); 
                 break;
             case "ScaleButton": 
-                button.interactable = false;
-                _userScript.ChangeMode(UserScript.Mode.Selection);
+                ChangeSelectedButton(button);
+                _userScript.CurrentMode = UserScript.Mode.Selection;
                 selectScript.ChangeSelectionMode(Selecting.SelectionMode.Scale); 
                 break;
             case "AlignPositionButton": _userScript.OpenAlignMenu(true); break;
@@ -128,9 +149,8 @@ public class UI : MonoBehaviour
 
     public void ChangeShapeButton(Button button)
     {
-        DisableAll();
-        button.interactable = false;
-        _userScript.ChangeMode(UserScript.Mode.Shape);
+        ChangeSelectedButton(button);
+        _userScript.CurrentMode = UserScript.Mode.Shape;
 
         shapeScript.SelectedShapeType = button.name switch
         {
@@ -147,6 +167,7 @@ public class UI : MonoBehaviour
     public void SizeChanged(float value)
     {
         drawingScript.ChangeRadius(0.001f + value * 0.03f);
+        shapingScript.ChangeRadius(0.001f + value * 0.03f);
         shapeScript.Radius = 0.001f + value * 0.03f;
     }
 
@@ -154,45 +175,5 @@ public class UI : MonoBehaviour
     {
         drawingScript.ChangeLineColor(value);
         shapeScript.ShapeColor = value;
-    }
-
-    private void DisableAll()
-    {
-        _drawingButton.interactable = true;
-        _eraseButton.interactable = true;
-        
-        _lineButton.interactable = true;
-        _planeButton.interactable = true;
-        _cubeButton.interactable = true;
-        _sphereButton.interactable = true;
-        _cylinderButton.interactable = true;
-        _pyramidButton.interactable = true;
-        
-        _moveButton.interactable = true;
-        _rotateButton.interactable = true;
-        _scaleButton.interactable = true;
-    }
-    
-    private void AssignButtons(Button[] buttons)
-    {
-        foreach (var button in buttons)
-        {
-            switch (button.name)
-            {
-                case "DrawingButton": _drawingButton = button; break;
-                case "ErasingButton": _eraseButton = button; break;
-                
-                case "LineButton": _lineButton = button; break;
-                case "PlaneButton": _planeButton = button; break;
-                case "CubeButton": _cubeButton = button; break;
-                case "SphereButton": _sphereButton = button; break;
-                case "CylinderButton": _cylinderButton = button; break;
-                case "PyramidButton": _pyramidButton = button; break;
-                
-                case "MoveButton": _moveButton = button; break;
-                case "RotateButton": _rotateButton = button; break;
-                case "ScaleButton": _scaleButton = button; break;
-            }
-        }
     }
 }

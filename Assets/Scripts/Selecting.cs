@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Oculus.Platform.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,8 +12,9 @@ public class Selecting : MonoBehaviour
     private InputAction _selectAction;
     private InputAction _deselectAction;
     private InputAction _interactAction;
+    
+    private UserScript _userScript;
 
-    public bool isShaping;
     private bool _inputEnabled = true;
     public bool alignPosition { private get; set; }
 
@@ -83,6 +85,11 @@ public class Selecting : MonoBehaviour
         SceneManager.Instance.ClearShapeables();
     }
 
+    private void Start()
+    {
+        _userScript = GetComponentInChildren<UserScript>();
+    }
+
     private void FixedUpdate()
     {
         float selectionButton = _selectAction.ReadValue<float>();
@@ -142,7 +149,7 @@ public class Selecting : MonoBehaviour
 
     private void FinishCreateShape(InputAction.CallbackContext ctx)
     {
-        if (isShaping)
+        if (_userScript.CurrentMode == UserScript.Mode.Shaping)
         {
             _collider.GetColliders().Select(go => go.GetComponent<Vertex>()).NotNull().ToList().ForEach(vertex => vertex.Select());
             _collider.GetColliders().Select(go => go.GetComponent<Edge>()).NotNull().ToList().ForEach(edge => edge.Select());

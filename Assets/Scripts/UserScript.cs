@@ -13,9 +13,21 @@ public class UserScript : MonoBehaviour
     public GameObject shapeCanvas;
     public GameObject selectionCanvas;
     public GameObject alignmentObject;
-    
+
     private Mode _currentMode = Mode.Shape;
-    private Mode _prevMode = Mode.Shape;
+    public Mode CurrentMode
+    {
+        get => _currentMode;
+        set
+        {
+            if (_currentMode != value)
+            {
+                _currentMode = value;
+                DisableMode();
+            }
+        }
+    }
+
     private Drawing _drawing;
     private Erasing _erasing;
     private Shapes _shapes;
@@ -35,9 +47,6 @@ public class UserScript : MonoBehaviour
     private InputAction _moveControllerAction;
     private InputAction _lookMouseAction;
     private InputAction _menuAction;
-    private InputAction _shapeMenuAction;
-    private InputAction _selectionMenuAction;
-    private InputAction _shapingAction;
 
     public float mouseSensitivity = 20f;
     private float _rotationX;
@@ -57,38 +66,7 @@ public class UserScript : MonoBehaviour
         _menuAction = Input.Instance.User.Menu;
         _menuAction.Enable();
         _menuAction.performed += OpenMenu;
-        _menuAction.canceled += CloseMenu;
-        
-        _shapeMenuAction = Input.Instance.User.ShapeMenu;
-        _shapeMenuAction.Enable();
-        _shapeMenuAction.performed += OpenShapeMenu;
-        _shapeMenuAction.canceled += CloseShapeMenu;
-        
-        _selectionMenuAction = Input.Instance.User.SelectionMenu;
-        _selectionMenuAction.Enable();
-        _selectionMenuAction.performed += OpenSelectionMenu;
-        _selectionMenuAction.canceled += CloseSelectionMenu;
-        
-        _shapingAction = Input.Instance.User.Shaping;
-        _shapingAction.Enable();
-        _shapingAction.performed += ChangeShaping;
-    }
-    
-    private void ChangeShaping(InputAction.CallbackContext ctx)
-    {
-        DisableMode();
-        if (_currentMode == Mode.Shaping)
-        {
-            _currentMode = _prevMode;
-            _selection.isShaping = false;
-        }
-        else
-        {
-            _prevMode = _currentMode;
-            _currentMode = Mode.Shaping;
-            _selection.isShaping = true;
-        }
-        EnableMode();
+        _menuAction.canceled += CloseMenus;
     }
 
     private void OnDisable()
@@ -96,7 +74,6 @@ public class UserScript : MonoBehaviour
         _moveControllerAction.Disable();
         _lookMouseAction.Disable();
         _menuAction.Disable();
-        _shapeMenuAction.Disable();
     }
 
     private void Start()
@@ -174,7 +151,7 @@ public class UserScript : MonoBehaviour
 
     private void EnableMode()
     {
-        switch (_currentMode)
+        switch (CurrentMode)
         {
             case Mode.Drawing: _drawing.EnableInputs(); break;
             case Mode.Erasing: _erasing.EnableInputs(); break;
@@ -193,60 +170,33 @@ public class UserScript : MonoBehaviour
         _shaping.DisableInputs();
     }
 
-    public void ChangeMode(Mode mode)
-    {
-        _currentMode = mode;
-        DisableMode();
-        EnableMode();
-    }
-
     private void OpenMenu(InputAction.CallbackContext ctx)
     {
         DisableMode();
         rayInteractor.SetActive(true);
-        shapeCanvas.SetActive(false);
-        selectionCanvas.SetActive(false);
         drawingCanvas.SetActive(true);
     }
 
-    private void CloseMenu(InputAction.CallbackContext ctx)
+    private void CloseMenus(InputAction.CallbackContext ctx)
     {
         drawingCanvas.SetActive(false);
+        selectionCanvas.SetActive(false);
+        shapeCanvas.SetActive(false);
+        alignmentObject.SetActive(false);
         rayInteractor.SetActive(false);
         EnableMode();
     }
 
-    private void OpenShapeMenu(InputAction.CallbackContext ctx)
+    public void OpenShapeMenu()
     {
-        DisableMode();
-        rayInteractor.SetActive(true);
         drawingCanvas.SetActive(false);
-        selectionCanvas.SetActive(false);
         shapeCanvas.SetActive(true);
     }
     
-    private void CloseShapeMenu(InputAction.CallbackContext ctx)
+    public void OpenSelectionMenu()
     {
-        shapeCanvas.SetActive(false);
-        rayInteractor.SetActive(false);
-        EnableMode();
-    }
-    
-    private void OpenSelectionMenu(InputAction.CallbackContext ctx)
-    {
-        DisableMode();
-        rayInteractor.SetActive(true);
         drawingCanvas.SetActive(false);
-        shapeCanvas.SetActive(false);
         selectionCanvas.SetActive(true);
-    }
-    
-    private void CloseSelectionMenu(InputAction.CallbackContext ctx)
-    {
-        selectionCanvas.SetActive(false);
-        alignmentObject.SetActive(false);
-        rayInteractor.SetActive(false);
-        EnableMode();
     }
 
     public void OpenAlignMenu(bool position)
