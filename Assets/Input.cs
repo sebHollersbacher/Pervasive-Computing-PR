@@ -64,15 +64,6 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Shaping"",
-                    ""type"": ""Button"",
-                    ""id"": ""4093647c-a3f0-4840-9a17-17f8c6f000c2"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Deselect"",
                     ""type"": ""Button"",
                     ""id"": ""1ba35e14-2aef-4351-97e9-f0d627f2db99"",
@@ -82,7 +73,7 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Create"",
+                    ""name"": ""CreateVertex"",
                     ""type"": ""Button"",
                     ""id"": ""d28ea6a9-373c-48d7-acd6-1069ab127f56"",
                     ""expectedControlType"": """",
@@ -94,24 +85,6 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""7152a482-c7da-469a-884c-05184a7ce3a8"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Shape Menu"",
-                    ""type"": ""Button"",
-                    ""id"": ""84272c4c-8672-4644-a146-0daf70e5c8f3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Selection Menu"",
-                    ""type"": ""Button"",
-                    ""id"": ""03dd938e-382d-43d1-a477-c6e7970238ac"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -165,34 +138,12 @@ public partial class @Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d7bba51e-3cf8-46c9-9c76-9b0b575b80f4"",
-                    ""path"": ""<OculusTouchController>{RightHand}/primaryButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad;XR"",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e453f757-9590-4f15-a2ca-16a30e026d70"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Shaping"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""98e5fdff-9b45-44ce-8902-409f6cca3a42"",
+                    ""id"": ""23abc6a7-eb86-44d6-b156-fc88d3f0533e"",
                     ""path"": ""<OculusTouchController>{RightHand}/gripPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
-                    ""action"": ""Shaping"",
+                    ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -209,8 +160,8 @@ public partial class @Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""7dbcf53b-0162-4971-a1f1-e8957e7f9199"",
-                    ""path"": ""<OculusTouchController>{RightHand}/secondaryButton"",
+                    ""id"": ""06e2492d-830b-4e6e-97e9-c13e5564ee88"",
+                    ""path"": ""<OculusTouchController>{RightHand}/primaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
@@ -225,18 +176,18 @@ public partial class @Input: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Create"",
+                    ""action"": ""CreateVertex"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f181db44-878d-4f6b-b469-1b8ed316d616"",
-                    ""path"": ""<OculusTouchController>{LeftHand}/triggerPressed"",
+                    ""id"": ""824e8444-8b85-4d4f-9055-d229a6557050"",
+                    ""path"": ""<OculusTouchController>{RightHand}/secondaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
-                    ""action"": ""Create"",
+                    ""action"": ""CreateVertex"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -330,34 +281,12 @@ public partial class @Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""96e36347-08b2-4d0f-9c05-abcd2c622480"",
-                    ""path"": ""<OculusTouchController>{LeftHand}/gripPressed"",
+                    ""id"": ""d3dfffcd-1520-4df1-af76-4c7694cfce44"",
+                    ""path"": ""<OculusTouchController>{LeftHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad;XR"",
                     ""action"": ""Menu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""46c8a2b4-50ee-4312-bc81-108fc64e151b"",
-                    ""path"": ""<OculusTouchController>{LeftHand}/primaryButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad;XR"",
-                    ""action"": ""Shape Menu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9420da2d-cd95-4613-b7c5-53b94c7235b1"",
-                    ""path"": ""<OculusTouchController>{LeftHand}/secondaryButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad;XR"",
-                    ""action"": ""Selection Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -949,12 +878,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
         m_User_Move = m_User.FindAction("Move", throwIfNotFound: true);
         m_User_Interact = m_User.FindAction("Interact", throwIfNotFound: true);
         m_User_Select = m_User.FindAction("Select", throwIfNotFound: true);
-        m_User_Shaping = m_User.FindAction("Shaping", throwIfNotFound: true);
         m_User_Deselect = m_User.FindAction("Deselect", throwIfNotFound: true);
-        m_User_Create = m_User.FindAction("Create", throwIfNotFound: true);
+        m_User_CreateVertex = m_User.FindAction("CreateVertex", throwIfNotFound: true);
         m_User_Menu = m_User.FindAction("Menu", throwIfNotFound: true);
-        m_User_ShapeMenu = m_User.FindAction("Shape Menu", throwIfNotFound: true);
-        m_User_SelectionMenu = m_User.FindAction("Selection Menu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1038,12 +964,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_User_Move;
     private readonly InputAction m_User_Interact;
     private readonly InputAction m_User_Select;
-    private readonly InputAction m_User_Shaping;
     private readonly InputAction m_User_Deselect;
-    private readonly InputAction m_User_Create;
+    private readonly InputAction m_User_CreateVertex;
     private readonly InputAction m_User_Menu;
-    private readonly InputAction m_User_ShapeMenu;
-    private readonly InputAction m_User_SelectionMenu;
     public struct UserActions
     {
         private @Input m_Wrapper;
@@ -1052,12 +975,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_User_Move;
         public InputAction @Interact => m_Wrapper.m_User_Interact;
         public InputAction @Select => m_Wrapper.m_User_Select;
-        public InputAction @Shaping => m_Wrapper.m_User_Shaping;
         public InputAction @Deselect => m_Wrapper.m_User_Deselect;
-        public InputAction @Create => m_Wrapper.m_User_Create;
+        public InputAction @CreateVertex => m_Wrapper.m_User_CreateVertex;
         public InputAction @Menu => m_Wrapper.m_User_Menu;
-        public InputAction @ShapeMenu => m_Wrapper.m_User_ShapeMenu;
-        public InputAction @SelectionMenu => m_Wrapper.m_User_SelectionMenu;
         public InputActionMap Get() { return m_Wrapper.m_User; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1079,24 +999,15 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
-            @Shaping.started += instance.OnShaping;
-            @Shaping.performed += instance.OnShaping;
-            @Shaping.canceled += instance.OnShaping;
             @Deselect.started += instance.OnDeselect;
             @Deselect.performed += instance.OnDeselect;
             @Deselect.canceled += instance.OnDeselect;
-            @Create.started += instance.OnCreate;
-            @Create.performed += instance.OnCreate;
-            @Create.canceled += instance.OnCreate;
+            @CreateVertex.started += instance.OnCreateVertex;
+            @CreateVertex.performed += instance.OnCreateVertex;
+            @CreateVertex.canceled += instance.OnCreateVertex;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
-            @ShapeMenu.started += instance.OnShapeMenu;
-            @ShapeMenu.performed += instance.OnShapeMenu;
-            @ShapeMenu.canceled += instance.OnShapeMenu;
-            @SelectionMenu.started += instance.OnSelectionMenu;
-            @SelectionMenu.performed += instance.OnSelectionMenu;
-            @SelectionMenu.canceled += instance.OnSelectionMenu;
         }
 
         private void UnregisterCallbacks(IUserActions instance)
@@ -1113,24 +1024,15 @@ public partial class @Input: IInputActionCollection2, IDisposable
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
-            @Shaping.started -= instance.OnShaping;
-            @Shaping.performed -= instance.OnShaping;
-            @Shaping.canceled -= instance.OnShaping;
             @Deselect.started -= instance.OnDeselect;
             @Deselect.performed -= instance.OnDeselect;
             @Deselect.canceled -= instance.OnDeselect;
-            @Create.started -= instance.OnCreate;
-            @Create.performed -= instance.OnCreate;
-            @Create.canceled -= instance.OnCreate;
+            @CreateVertex.started -= instance.OnCreateVertex;
+            @CreateVertex.performed -= instance.OnCreateVertex;
+            @CreateVertex.canceled -= instance.OnCreateVertex;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
-            @ShapeMenu.started -= instance.OnShapeMenu;
-            @ShapeMenu.performed -= instance.OnShapeMenu;
-            @ShapeMenu.canceled -= instance.OnShapeMenu;
-            @SelectionMenu.started -= instance.OnSelectionMenu;
-            @SelectionMenu.performed -= instance.OnSelectionMenu;
-            @SelectionMenu.canceled -= instance.OnSelectionMenu;
         }
 
         public void RemoveCallbacks(IUserActions instance)
@@ -1317,12 +1219,9 @@ public partial class @Input: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
-        void OnShaping(InputAction.CallbackContext context);
         void OnDeselect(InputAction.CallbackContext context);
-        void OnCreate(InputAction.CallbackContext context);
+        void OnCreateVertex(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
-        void OnShapeMenu(InputAction.CallbackContext context);
-        void OnSelectionMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

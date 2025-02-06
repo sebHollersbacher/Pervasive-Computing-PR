@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 public partial class Input
 {
     private static Input _instance;

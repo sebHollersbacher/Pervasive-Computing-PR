@@ -14,7 +14,7 @@ public class Drawing : MonoBehaviour
     private bool _inputEnabled = true;
 
     public int radialSegments = 4;
-    private float radius = 0.03f;
+    private float _radius = 0.03f;
 
     public GameObject colliderPrefab;
 
@@ -63,8 +63,8 @@ public class Drawing : MonoBehaviour
     
     public void ChangeRadius(float newRadius)
     {
-        radius = newRadius;
-        brush.transform.localScale = new Vector3(2*radius, 2*radius, 2*radius);
+        _radius = newRadius;
+        brush.transform.localScale = new Vector3(2*_radius, 2*_radius, 2*_radius);
     }
 
     #endregion
@@ -170,7 +170,7 @@ public class Drawing : MonoBehaviour
         for (int j = 0; j < radialSegments; j++)
         {
             float angle = j * Mathf.PI * 2 / radialSegments;
-            Vector3 localPos = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
+            Vector3 localPos = new Vector3(Mathf.Cos(angle) * _radius, Mathf.Sin(angle) * _radius, 0);
             _vertices.Add(position + rotation * localPos);
         }
 

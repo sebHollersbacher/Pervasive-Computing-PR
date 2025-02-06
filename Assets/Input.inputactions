@@ -42,15 +42,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shaping",
-                    "type": "Button",
-                    "id": "4093647c-a3f0-4840-9a17-17f8c6f000c2",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Deselect",
                     "type": "Button",
                     "id": "1ba35e14-2aef-4351-97e9-f0d627f2db99",
@@ -60,7 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Create",
+                    "name": "CreateVertex",
                     "type": "Button",
                     "id": "d28ea6a9-373c-48d7-acd6-1069ab127f56",
                     "expectedControlType": "",
@@ -72,24 +63,6 @@
                     "name": "Menu",
                     "type": "Button",
                     "id": "7152a482-c7da-469a-884c-05184a7ce3a8",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Shape Menu",
-                    "type": "Button",
-                    "id": "84272c4c-8672-4644-a146-0daf70e5c8f3",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Selection Menu",
-                    "type": "Button",
-                    "id": "03dd938e-382d-43d1-a477-c6e7970238ac",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -143,34 +116,12 @@
                 },
                 {
                     "name": "",
-                    "id": "d7bba51e-3cf8-46c9-9c76-9b0b575b80f4",
-                    "path": "<OculusTouchController>{RightHand}/primaryButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad;XR",
-                    "action": "Select",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e453f757-9590-4f15-a2ca-16a30e026d70",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Shaping",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "98e5fdff-9b45-44ce-8902-409f6cca3a42",
+                    "id": "23abc6a7-eb86-44d6-b156-fc88d3f0533e",
                     "path": "<OculusTouchController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;XR",
-                    "action": "Shaping",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -187,8 +138,8 @@
                 },
                 {
                     "name": "",
-                    "id": "7dbcf53b-0162-4971-a1f1-e8957e7f9199",
-                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "id": "06e2492d-830b-4e6e-97e9-c13e5564ee88",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;XR",
@@ -203,18 +154,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Create",
+                    "action": "CreateVertex",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "f181db44-878d-4f6b-b469-1b8ed316d616",
-                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
+                    "id": "824e8444-8b85-4d4f-9055-d229a6557050",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;XR",
-                    "action": "Create",
+                    "action": "CreateVertex",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -308,34 +259,12 @@
                 },
                 {
                     "name": "",
-                    "id": "96e36347-08b2-4d0f-9c05-abcd2c622480",
-                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
+                    "id": "d3dfffcd-1520-4df1-af76-4c7694cfce44",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;XR",
                     "action": "Menu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "46c8a2b4-50ee-4312-bc81-108fc64e151b",
-                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad;XR",
-                    "action": "Shape Menu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9420da2d-cd95-4613-b7c5-53b94c7235b1",
-                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad;XR",
-                    "action": "Selection Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

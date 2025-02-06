@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,16 +7,14 @@ public class Shaping : MonoBehaviour
     private InputAction _createAction;
     
     public GameObject shaper;
-    private ColliderContainer _collider;
     
     private bool isActive;
-    
     private Vector3 startPosition;
 
     private void Start()
     {
         startPosition = shaper.transform.position;
-        _collider = shaper.AddComponent<ColliderContainer>();
+        shaper.AddComponent<ColliderContainer>();
         Rigidbody rb = shaper.AddComponent<Rigidbody>();
         rb.isKinematic = true;
     }
@@ -51,7 +48,8 @@ public class Shaping : MonoBehaviour
     {
         _interactAction = Input.Instance.User.Interact;
         _interactAction.Enable();
-        _createAction = Input.Instance.User.Create;
+        
+        _createAction = Input.Instance.User.CreateVertex;
         _createAction.Enable();
         _createAction.performed += CreateVertices;
     }

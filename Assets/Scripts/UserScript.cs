@@ -1,7 +1,5 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class UserScript : MonoBehaviour
 {
@@ -14,7 +12,7 @@ public class UserScript : MonoBehaviour
     public GameObject selectionCanvas;
     public GameObject alignmentObject;
 
-    private Mode _currentMode = Mode.Shape;
+    private Mode _currentMode = Mode.Drawing;
     public Mode CurrentMode
     {
         get => _currentMode;

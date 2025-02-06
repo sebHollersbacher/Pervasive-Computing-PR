@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.ProBuilder.MeshOperations;
 
 public class Vertex : MonoBehaviour
 {
